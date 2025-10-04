@@ -39,7 +39,7 @@ public class Grid {
       // Check if the cell does not already have a module
       if (targetCell.Module == null) {
         targetCell.Module = module;
-        module.transform.position = CoordToPosition(coord);
+        module.transform.position = CoordToPosition(coord, Helpers._modZ);
         return true;
       }
     }
@@ -66,14 +66,14 @@ public class Grid {
     return new Vector2(startX, startY);
   }
 
-  public Vector2 CoordToPosition(Coord coord) {
+  public Vector3 CoordToPosition(Coord coord, float z = 0.0f) {
     Vector2 originOffset = _GetGridOriginOffset();
 
     float posX = originOffset.x + coord.x * Module._moduleSize;
     // Y-coordinate is inverted: highest world y for coord.y = 0, decreases as coord.y increases
     float posY = originOffset.y - coord.y * Module._moduleSize;
 
-    return new Vector2(posX, posY);
+    return new Vector3(posX, posY, z);
   }
 
   public Coord PositionToCoord(Vector2 position) {

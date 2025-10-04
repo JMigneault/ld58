@@ -63,8 +63,10 @@ public class Module : MonoBehaviour {
   private GameObject[] _uiProtrusions = new GameObject[4];
 
   [Header("Attributes")]
-  public int _maxHealth;
+  public int _maxHp;
   public bool _needsPower;
+  public bool _hasProtrusion = false;
+  public dir _protrusionDir;
 
   [Header("Stats")]
   public int _hp;
@@ -72,7 +74,7 @@ public class Module : MonoBehaviour {
 
   [Header("Type Specific")]
   public ModuleType _type;
-  public Weapon _weapon;
+  // public Weapon _weapon;
 
   public bool[] _connects = new bool[4]; // Array to store connections for U, R, D, L
 
@@ -83,11 +85,15 @@ public class Module : MonoBehaviour {
   private bool _isPowered = false;
   private float _currentGenericBarFill = 0.0f;
 
+  public static Module MakeModule(ModuleType type) {
+    return MakeModule(new ModuleSpec(type));
+  }
+
   public static Module MakeModule(ModuleSpec spec) {
     var mod = GameObject.Instantiate(Helpers.Prefab("Module")).GetComponent<Module>();
     mod._type = spec._type;
 
-    for (int i = 0; i < _connects.Length; i++)
+    for (int i = 0; i < mod._connects.Length; i++)
       mod._connects[i] = spec._connects[i];
 
     // Assign existing UI GameObjects to the new arrays by direction
@@ -119,12 +125,12 @@ public class Module : MonoBehaviour {
     }
 
     // Set HP to 1.0f and disable its UI initially
-    mod.SetHealth(1.0f);
+    mod._maxHp = 2;
+    mod.SetHealth(2);
 
-    _maxHp = 2;
-    _hp = hp;
+    mod._hasProtrusion = false;
 
-    switch (type) {
+    switch (spec._type) {
       case ModuleType.Core:
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "C";
@@ -144,6 +150,8 @@ public class Module : MonoBehaviour {
         // TODO: Initialize Energy module specifics
         break;
       case ModuleType.Weapon:
+        mod._hasProtrusion = true;
+        mod._protrusionDir = spec._protrusionDir;
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "W";
         }
@@ -159,7 +167,7 @@ public class Module : MonoBehaviour {
         // TODO: Initialize Shield module specifics
         break;
       default:
-        Helpers.Error("Unknown ModuleType: {0}", type);
+        Helpers.Error("Unknown ModuleType: {0}", mod._type);
         break;
     }
 

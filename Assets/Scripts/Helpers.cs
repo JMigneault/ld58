@@ -5,6 +5,8 @@ using System;
 
 public static class Helpers {
 
+  public const float _modZ = -0.5f;
+
   public static GameObject Prefab(string name) {
     string path = "prefabs/" + name;
     var res = Resources.Load<GameObject>(path);
