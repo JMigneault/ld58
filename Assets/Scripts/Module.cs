@@ -14,6 +14,34 @@ public enum ModuleType {
 
 public class Module : MonoBehaviour {
   public static float _moduleSize = 1.0f;
+  
+  [Header("UI")]
+  public GameObject _uiLabel;
+  public GameObject _uiHpBar;
+  public GameObject _uiPowered;
+  public GameObject _uiWireU;
+  public GameObject _uiWireR;
+  public GameObject _uiWireD;
+  public GameObject _uiWireL;
+  public GameObject _uiConnectorUInner;
+  public GameObject _uiConnectorUOuter;
+  public GameObject _uiConnectorRInner;
+  public GameObject _uiConnectorROuter;
+  public GameObject _uiConnectorDInner;
+  public GameObject _uiConnectorDOuter;
+  public GameObject _uiConnectorLInner;
+  public GameObject _uiConnectorLOuter;
+  public GameObject _uiProtrusionU;
+  public GameObject _uiProtrusionR;
+  public GameObject _uiProtrusionD;
+  public GameObject _uiProtrusionL;
+
+  // New array fields for UI elements by direction
+  private GameObject[] _uiWires = new GameObject[4];
+  private GameObject[] _uiConnectorsInner = new GameObject[4];
+  private GameObject[] _uiConnectorsOuter = new GameObject[4];
+  private GameObject[] _uiProtrusions = new GameObject[4];
+
 /*
   public int _hp;
 
@@ -39,6 +67,27 @@ public class Module : MonoBehaviour {
     for (int i = 0; i < mod._connects.Length; i++) {
       mod._connects[i] = true;
     }
+
+    // Assign existing UI GameObjects to the new arrays by direction
+    mod._uiWires[(int)dir.U] = mod._uiWireU;
+    mod._uiWires[(int)dir.R] = mod._uiWireR;
+    mod._uiWires[(int)dir.D] = mod._uiWireD;
+    mod._uiWires[(int)dir.L] = mod._uiWireL;
+
+    mod._uiConnectorsInner[(int)dir.U] = mod._uiConnectorUInner;
+    mod._uiConnectorsOuter[(int)dir.U] = mod._uiConnectorUOuter;
+    mod._uiConnectorsInner[(int)dir.R] = mod._uiConnectorRInner;
+    mod._uiConnectorsOuter[(int)dir.R] = mod._uiConnectorROuter;
+    mod._uiConnectorsInner[(int)dir.D] = mod._uiConnectorDInner;
+    mod._uiConnectorsOuter[(int)dir.D] = mod._uiConnectorDOuter;
+    mod._uiConnectorsInner[(int)dir.L] = mod._uiConnectorLInner;
+    mod._uiConnectorsOuter[(int)dir.L] = mod._uiConnectorLOuter;
+
+    // Assign existing UI GameObjects for protrusions to the new array
+    mod._uiProtrusions[(int)dir.U] = mod._uiProtrusionU;
+    mod._uiProtrusions[(int)dir.R] = mod._uiProtrusionR;
+    mod._uiProtrusions[(int)dir.D] = mod._uiProtrusionD;
+    mod._uiProtrusions[(int)dir.L] = mod._uiProtrusionL;
     
     // TODO: set sprite based on type
     return mod;
