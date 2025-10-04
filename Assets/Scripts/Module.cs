@@ -10,7 +10,8 @@ public enum ModuleType {
   Connection,
   Energy,
   Weapon,
-  Shield
+  Shield,
+  Engine
 }
 
 public class ModuleSpec {
@@ -147,7 +148,7 @@ public class Module : MonoBehaviour {
         break;
       case ModuleType.Energy:
         if (mod._uiLabel != null) {
-          mod._uiLabel.GetComponent<TMP_Text>().text = "E";
+          mod._uiLabel.GetComponent<TMP_Text>().text = "P";
         }
         // TODO: Initialize Energy module specifics
         break;
@@ -155,7 +156,7 @@ public class Module : MonoBehaviour {
         mod._hasProtrusion = true;
         mod._protrusionDir = spec._protrusionDir;
         if (mod._uiLabel != null) {
-          mod._uiLabel.GetComponent<TMP_Text>().text = "W";
+          mod._uiLabel.GetComponent<TMP_Text>().text = "G";
         }
         mod._needsPower = true;
         mod._uiPowered.SetActive(true);
@@ -168,6 +169,14 @@ public class Module : MonoBehaviour {
         mod._needsPower = true;
         mod._uiPowered.SetActive(true);
         // TODO: Initialize Shield module specifics
+        break;
+      case ModuleType.Engine:
+        if (mod._uiLabel != null) {
+          mod._uiLabel.GetComponent<TMP_Text>().text = "E";
+        }
+        mod._needsPower = true;
+        mod._uiPowered.SetActive(true);
+        // TODO: Initialize Engine module specifics
         break;
       default:
         Helpers.Error("Unknown ModuleType: {0}", mod._type);
@@ -279,4 +288,26 @@ public class Module : MonoBehaviour {
       }
     }
   }
+
+  public string GetTooltip() {
+
+    switch (_type) {
+      case ModuleType.Core:
+        return "Core (C)\nIf this is destroyed, you lose.";
+      case ModuleType.Connection:
+        return "Connector\nNo special effects.";
+      case ModuleType.Energy:
+        return "Power (P)\nPowers adjacent modules.";
+      case ModuleType.Weapon:
+        return "Gun (G)\nFires regularly.\nREQUIRES POWER";
+      case ModuleType.Shield:
+        return "Shield (S)\nShields adjacent modules.\nREQUIRES POWER";
+      case ModuleType.Engine:
+        return "Engine (E)\nIncreases ship turn speed.\nREQUIRES POWER";
+      default:
+        return "Unknown Module";
+    }
+
+  }
+
 }

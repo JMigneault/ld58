@@ -2,7 +2,7 @@ using UnityEngine;
 
 class FloatingModuleTracker {
   public static FloatingModuleTracker inst;
-  int numSlots = 6;
+  int numSlots = 3;
   bool[] slots; // whether each slot is filled
 
   float vertOff = 4f;
