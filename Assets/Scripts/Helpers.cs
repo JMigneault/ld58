@@ -5,6 +5,7 @@ using System;
 
 public static class Helpers {
 
+  public const float _highlightZ = -0.4f;
   public const float _modZ = -0.5f;
 
   public static GameObject Prefab(string name) {

@@ -5,7 +5,7 @@ public class InputHandler : MonoBehaviour {
   void Update() {
     if (Input.GetKeyDown(KeyCode.P)) { // TODO: XXX for testing
       if (Placer.inst._currentModule == null) {
-        Placer.inst._currentModule = Module.MakeModule(ModuleType.Connection);
+        Placer.inst.StartPlacing(Module.MakeModule(ModuleType.Connection));
       } else {
         Placer.inst.StopPlacing();
       }

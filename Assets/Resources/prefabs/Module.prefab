@@ -2742,6 +2742,8 @@ MonoBehaviour:
   _uiProtrusionL: {fileID: 2223546446105682018}
   _maxHp: 0
   _needsPower: 0
+  _hasProtrusion: 0
+  _protrusionDir: 0
   _hp: 0
   _powered: 0
   _type: 1
@@ -3492,6 +3494,14 @@ PrefabInstance:
     - target: {fileID: 5324683283993453924, guid: 7bc5c09e041b55c4aa0173e5c646139a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7936170456131301526, guid: 7bc5c09e041b55c4aa0173e5c646139a, type: 3}
+      propertyPath: _placingColor.a
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7936170456131301526, guid: 7bc5c09e041b55c4aa0173e5c646139a, type: 3}
+      propertyPath: _placingBorderColor.a
+      value: 0.8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

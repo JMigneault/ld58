@@ -77,4 +77,8 @@ public class TileHighlight : MonoBehaviour {
       _materialInstance.SetColor("_Color", fillColor);
     }
   }
+
+  public void Scale(bool big) {
+    transform.localScale = big ? Vector3.one * 1.05f : Vector3.one;
+  }
 }
