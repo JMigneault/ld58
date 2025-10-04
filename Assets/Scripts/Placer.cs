@@ -108,6 +108,8 @@ public class Placer {
         }
 
         _lastHoveredCoord = hoverCoord;
+        if (_grid.ValidCoord(hoverCoord))
+          _highlightTiles[hoverCoord.x, hoverCoord.y].Scale(true); // Make it big
       }
     } else {
       // If no module is being placed, ensure no highlight is stuck in 'Placing' mode

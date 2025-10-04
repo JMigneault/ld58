@@ -171,6 +171,7 @@ public class Module : MonoBehaviour {
         break;
     }
 
+    mod.UpdateRotatables(); // Initial connection update
     return mod;
   }
 
@@ -183,6 +184,24 @@ public class Module : MonoBehaviour {
     _connects[(int)dir.L] = oldConnects[(int)dir.D];
     _connects[(int)dir.U] = oldConnects[(int)dir.L];
 
+    // Rotate protrusion direction
+    _protrusionDir = Coord.Turn90Degrees(_protrusionDir);
+
+    UpdateRotatables(); // Update connections after rotation
+  }
+
+  public void UpdateRotatables() {
+    for (int i = 0; i < _connects.Length; i++) {
+      dir d = (dir)i;
+      bool connects = _connects[i];
+
+      _uiConnectorsInner[(int)d].SetActive(connects);
+      _uiConnectorsOuter[(int)d].SetActive(connects);
+    }
+
+    for (int i = 0; i < _uiProtrusions.Length; i++) {
+      _uiProtrusions[i].SetActive(_hasProtrusion && (dir)i == _protrusionDir);
+    }
   }
 
   public void SetHealth(int hp) {
