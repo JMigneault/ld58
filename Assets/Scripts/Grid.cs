@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 
 public class Grid {
+
   public GameObject _parent;
 
   public int _dimX;

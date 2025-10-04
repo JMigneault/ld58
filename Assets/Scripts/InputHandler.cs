@@ -18,6 +18,9 @@ public class InputHandler : MonoBehaviour {
       Placer.inst.RotateCurrent();
     }
 
+    if (Input.GetKeyDown(KeyCode.Escape))
+      Placer.inst.StopPlacing();
+
   }
 
 }

@@ -1,7 +1,5 @@
 
 Features
-- Module UI
-- Complete module placement
 - Add screen ui
 - Add module power system
 - Implement modules
@@ -9,6 +7,10 @@ Features
 - Tooltips
 
 Bugs
+- click outside ship to deselect not working
+
+Juice
+- scale up floating mods when hovered
 
 Stretch
 - Boost modules

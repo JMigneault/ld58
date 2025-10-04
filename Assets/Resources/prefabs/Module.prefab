@@ -2531,6 +2531,7 @@ GameObject:
   - component: {fileID: 2800005184916303315}
   - component: {fileID: 1316322227285657933}
   - component: {fileID: 8459255899902778957}
+  - component: {fileID: 5941942407078719810}
   m_Layer: 0
   m_Name: Module
   m_TagString: Untagged
@@ -2673,6 +2674,22 @@ MonoBehaviour:
   _powered: 0
   _type: 1
   _connects: 00000000
+--- !u!114 &5941942407078719810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6805751057936535829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b739d0d8691912a46862d01623818d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _slotIdx: -1
+  _floatAmplitude: 0.05
+  _floatSpeed: 1.5
+  _rotationSpeed: 5
 --- !u!1 &7759179839886235656
 GameObject:
   m_ObjectHideFlags: 0

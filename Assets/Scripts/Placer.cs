@@ -72,6 +72,9 @@ public class Placer {
     }
     if (_currentModule != null) {
       _currentModule.GetComponentInChildren<TileHighlight>().SetHighlightMode(HighlightMode.None);
+      if (_currentModule._cell == null) {
+        _currentModule.GetComponent<FloatingModule>().EnableFloat(true);
+      }
       _currentModule = null; // Also clear the current module when stopping placement
     }
   }
@@ -183,11 +186,20 @@ public class Placer {
     if (_currentModule != null) {
       Coord candidateCoord = ChoosePlacementCandidate(mousePosition);
 
-      if (candidateCoord != new Coord(-1, -1)) {
+      /* TODO: clicking out in space to deselect not working TODO
+      if (candidateCoord.x == -69 && !_currentModule.GetComponent<FloatingModule>().startFloatingThisFrame) { // HACK - clicked outside the grid - stop placing
+        Helpers.Log("Try placing hitting hack!");
+        StopPlacing();
+        return false;
+      }
+      */
+
+      if (candidateCoord.y != -1) {
         // A valid placement candidate was found.
         // Now, try to add the current module to the grid at this coordinate.
         var success = _grid.AddModule(_currentModule, candidateCoord);
         if (success) {
+          _currentModule.GetComponent<FloatingModule>().ReleaseSlot();
           StopPlacing();
         }
         return success;
@@ -204,8 +216,11 @@ public class Placer {
     int closestCandDist = 100000;
     Coord closestCand = new Coord(-1, -1);
 
+    if (!_grid.ValidCoord(hoveredCoord))
+      return new Coord(-69, -1); // huge HACK - this signals that we clicked out of the ship grid
+
     if (_grid.ValidCoord(hoveredCoord) && _grid.GetModule(hoveredCoord) != null)
-      return closestCand;
+      return closestCand; // none
 
     foreach (dir d in hoveredCoord.allDirs) {
       Coord cursor = hoveredCoord;
@@ -240,6 +255,7 @@ public class Placer {
   public void RotateCurrent() {
     if (_currentModule != null) {
       _currentModule.Rotate();
+      EnableHighlights();
     }
   }
 
