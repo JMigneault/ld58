@@ -27,18 +27,34 @@ public class Module : MonoBehaviour {
   */
   public ModuleType _type;
 
-  public bool _connectsUp = true;
-  public bool _connectsRight = true;
-  public bool _connectsDown = true;
-  public bool _connectsLeft = true;
+  public bool[] _connects = new bool[4]; // Array to store connections for U, R, D, L
 
   public Cell _cell; // null if not in ship
 
   public static Module MakeModule(ModuleType type) {
     var mod = GameObject.Instantiate(Helpers.Prefab("Module")).GetComponent<Module>();
-    // TODO: set sprite based on type
     mod._type = type;
+    
+    // Initialize all connections to true by default
+    for (int i = 0; i < mod._connects.Length; i++) {
+      mod._connects[i] = true;
+    }
+    
+    // TODO: set sprite based on type
     return mod;
+  }
+
+  public void Rotate() {
+    bool[] oldConnects = (bool[])_connects.Clone();
+
+    // Rotate clockwise: U -> R, R -> D, D -> L, L -> U
+    _connects[(int)dir.R] = oldConnects[(int)dir.U];
+    _connects[(int)dir.D] = oldConnects[(int)dir.R];
+    _connects[(int)dir.L] = oldConnects[(int)dir.D];
+    _connects[(int)dir.U] = oldConnects[(int)dir.L];
+
+    // TODO: better way to do this?
+    transform.Rotate(0, 0, -90); // Rotate -90 degrees around Z-axis for clockwise visual rotation
   }
 
 }
