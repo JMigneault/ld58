@@ -1948,7 +1948,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8180065140688581377
 Transform:
   m_ObjectHideFlags: 0
@@ -2829,6 +2829,7 @@ MonoBehaviour:
   _uiLabel: {fileID: 7865497441936819245}
   _uiHpBar: {fileID: 1253417838715549116}
   _uiPowered: {fileID: 6136842054001027698}
+  _uiGenericBar: {fileID: 7759179839886235656}
   _uiWireU: {fileID: 1364171812767670426}
   _uiWireR: {fileID: 4451298933703288868}
   _uiWireD: {fileID: 2496959791641376930}

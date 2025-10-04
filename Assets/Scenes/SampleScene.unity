@@ -166,6 +166,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9597bb745f4f9634c8f9d039463c9222, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &421514016 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7759179839886235656, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
+  m_PrefabInstance: {fileID: 1879680212}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,10 +437,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7759179839886235656, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7865497441936819245, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8459255899902778957, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
+      propertyPath: _uiGenericBar
+      value: 
+      objectReference: {fileID: 421514016}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

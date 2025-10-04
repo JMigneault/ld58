@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using TMPro;
+using DG.Tweening;
 
 public enum ModuleType {
   Core,
@@ -19,6 +21,7 @@ public class Module : MonoBehaviour {
   public GameObject _uiLabel;
   public GameObject _uiHpBar;
   public GameObject _uiPowered;
+  public GameObject _uiGenericBar;
   public GameObject _uiWireU;
   public GameObject _uiWireR;
   public GameObject _uiWireD;
@@ -59,6 +62,11 @@ public class Module : MonoBehaviour {
 
   public Cell _cell; // null if not in ship
 
+  // Fields to save current UI values
+  private float _currentHealthFill = 1.0f;
+  private bool _isPowered = false;
+  private float _currentGenericBarFill = 0.0f;
+
   public static Module MakeModule(ModuleType type) {
     var mod = GameObject.Instantiate(Helpers.Prefab("Module")).GetComponent<Module>();
     mod._type = type;
@@ -88,8 +96,64 @@ public class Module : MonoBehaviour {
     mod._uiProtrusions[(int)dir.R] = mod._uiProtrusionR;
     mod._uiProtrusions[(int)dir.D] = mod._uiProtrusionD;
     mod._uiProtrusions[(int)dir.L] = mod._uiProtrusionL;
-    
-    // TODO: set sprite based on type
+
+    // Disable all protrusions
+    for (int i = 0; i < mod._uiProtrusions.Length; i++) {
+      if (mod._uiProtrusions[i] != null) {
+        mod._uiProtrusions[i].SetActive(false);
+      }
+    }
+
+    // Set HP to 1.0f and disable its UI initially
+    mod.SetHealth(1.0f);
+    if (mod._uiHpBar != null) {
+      mod._uiHpBar.SetActive(false); // Disable HP bar by default
+    }
+
+    // Disable the generic bar by default
+    if (mod._uiGenericBar != null) {
+      mod._uiGenericBar.SetActive(false);
+    }
+
+    switch (type) {
+      case ModuleType.Core:
+        if (mod._uiLabel != null) {
+          mod._uiLabel.GetComponent<TMP_Text>().text = "C";
+        }
+        // TODO: Initialize Core module specifics
+        break;
+      case ModuleType.Connection:
+        if (mod._uiLabel != null) {
+          mod._uiLabel.GetComponent<TMP_Text>().text = "";
+        }
+        // TODO: Initialize Connection module specifics
+        break;
+      case ModuleType.Energy:
+        if (mod._uiLabel != null) {
+          mod._uiLabel.GetComponent<TMP_Text>().text = "E";
+        }
+        // TODO: Initialize Energy module specifics
+        break;
+      case ModuleType.Weapon:
+        if (mod._uiLabel != null) {
+          mod._uiLabel.GetComponent<TMP_Text>().text = "W";
+        }
+        if (mod._uiGenericBar != null) {
+          mod._uiGenericBar.SetActive(true); // Re-enable generic bar for Weapon type
+        }
+        // TODO: Initialize Weapon module specifics
+        break;
+      case ModuleType.Shield:
+        if (mod._uiLabel != null) {
+          mod._uiLabel.GetComponent<TMP_Text>().text = "S";
+        }
+        // TODO: Initialize Shield module specifics
+        break;
+      default:
+        Helpers.Error("Unknown ModuleType: {0}", type);
+        break;
+    }
+
     return mod;
   }
 
@@ -102,8 +166,59 @@ public class Module : MonoBehaviour {
     _connects[(int)dir.L] = oldConnects[(int)dir.D];
     _connects[(int)dir.U] = oldConnects[(int)dir.L];
 
-    // TODO: better way to do this?
-    transform.Rotate(0, 0, -90); // Rotate -90 degrees around Z-axis for clockwise visual rotation
   }
 
+  public void SetHealth(float prop) {
+    if (prop < 0 || prop > 1f)
+      Helpers.Error("Invalid health prop: {0}", prop);
+    
+    _currentHealthFill = prop;
+
+    if (_uiHpBar != null) {
+      // Ensure the UI bar is active when health is set, unless it's being fully filled to 1.0f
+      if (prop < 1.0f) {
+        _uiHpBar.SetActive(true);
+        // Kill any pending disable tweens if health is no longer full
+        _uiHpBar.transform.DOKill(true);
+      }
+      
+      UIBar hpBar = _uiHpBar.GetComponentInChildren<UIBar>();
+      if (hpBar != null) {
+        hpBar.SetFill(prop);
+      } else {
+        Helpers.Error("UIBar component not found in _uiHpBar children.");
+      }
+
+      // If health is full, disable the UI bar after a delay
+      if (prop == 1.0f) {
+        DOTween.Sequence().AppendInterval(5.0f).OnComplete(() => {
+          if (_currentHealthFill == 1.0f) { // Re-check condition in case health changed during delay
+            _uiHpBar.SetActive(false);
+          }
+        });
+      }
+    }
+  }
+
+  public void SetPower(bool powered) {
+    _isPowered = powered;
+    if (_uiPowered != null) {
+      _uiPowered.SetActive(powered);
+    }
+  }
+
+  public void SetBar(float prop) {
+    if (prop < 0 || prop > 1f)
+      Helpers.Error("Invalid bar prop: {0}", prop);
+
+    _currentGenericBarFill = prop;
+    if (_uiGenericBar != null) {
+      UIBar genericBar = _uiGenericBar.GetComponentInChildren<UIBar>();
+      if (genericBar != null) {
+        genericBar.SetFill(prop);
+      } else {
+        Helpers.Error("UIBar component not found in _uiGenericBar children.");
+      }
+    }
+  }
 }
