@@ -152,8 +152,6 @@ public class Placer {
           }
 
           // Check 4: Does 'mod' connect to the existing neighbor module?
-          Helpers.Log("nm : {0}, d : {1}, mod : {2}", neighborModule, d, mod);
-          Helpers.Log("nmconn : {0}", neighborModule._connects);
           bool modConnectsThisWay = mod._connects[(int)d];
           bool neighborConnectsBack = neighborModule._connects[(int)Coord.OppDir(d)];
 
@@ -186,13 +184,11 @@ public class Placer {
     if (_currentModule != null) {
       Coord candidateCoord = ChoosePlacementCandidate(mousePosition);
 
-      /* TODO: clicking out in space to deselect not working TODO
-      if (candidateCoord.x == -69 && !_currentModule.GetComponent<FloatingModule>().startFloatingThisFrame) { // HACK - clicked outside the grid - stop placing
+      if (candidateCoord.x == -69 && !_currentModule.GetComponent<FloatingModule>().startPlacingThisFrame) { // HACK - clicked outside the grid - stop placing
         Helpers.Log("Try placing hitting hack!");
         StopPlacing();
         return false;
       }
-      */
 
       if (candidateCoord.y != -1) {
         // A valid placement candidate was found.

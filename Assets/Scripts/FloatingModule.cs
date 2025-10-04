@@ -7,7 +7,7 @@ public class FloatingModule : MonoBehaviour {
 
   public int _slotIdx = -1;
 
-  public bool startFloatingThisFrame = false;
+  public bool startPlacingThisFrame = false;
 
   [Header("Floating Animation Settings")]
   [SerializeField] private float _floatAmplitude = 0.05f;
@@ -49,6 +49,7 @@ public class FloatingModule : MonoBehaviour {
   }
 
   public void EnableFloat(bool enabled) {
+    startPlacingThisFrame = true;
     if (enabled) {
       _boxCollider.enabled = true;
       StartFloating();
@@ -59,8 +60,6 @@ public class FloatingModule : MonoBehaviour {
   }
 
   private void StartFloating() {
-    Helpers.Log("Try placi(FLOAT)ng hitting hack!");
-    startFloatingThisFrame = true;
     StopFloatingAnimation(); // Ensure no previous tweens are running
 
     if (_slotIdx == -1) {
@@ -108,7 +107,7 @@ public class FloatingModule : MonoBehaviour {
   }
 
   void LateUpdate() {
-    startFloatingThisFrame = false;
+    startPlacingThisFrame = false;
   }
 
 }

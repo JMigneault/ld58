@@ -14,6 +14,7 @@ public class Init {
 
     _globalScripts = new GameObject("GlobalScripts");
     var inputHandler = _globalScripts.AddComponent<InputHandler>();
+    var timeLord = _globalScripts.AddComponent<TimeLord>();
 
     var ship = GameObject.Instantiate(Helpers.Prefab("Ship"));
 

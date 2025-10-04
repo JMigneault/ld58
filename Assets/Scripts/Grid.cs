@@ -40,6 +40,7 @@ public class Grid {
       // Check if the cell does not already have a module
       if (targetCell.Module == null) {
         targetCell.Module = module;
+        module._cell = targetCell;
         module.transform.position = CoordToPosition(coord, Helpers._modZ);
         return true;
       }
