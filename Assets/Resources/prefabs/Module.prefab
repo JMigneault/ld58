@@ -2687,6 +2687,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _slotIdx: -1
+  startPlacingThisFrame: 0
   _floatAmplitude: 0.05
   _floatSpeed: 1.5
   _rotationSpeed: 5
@@ -2739,7 +2740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2496824030654692327
 RectTransform:
   m_ObjectHideFlags: 0

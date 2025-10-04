@@ -3,13 +3,14 @@ using DG.Tweening; // Import DOTween
 
 public class TimeLord : MonoBehaviour {
 
-  float _timeToNextFloater;
+  public float _timeToNextFloater;
 
   void Start() {
     SetTimeToNextFloater();
   }
 
   void Update() {
+    _timeToNextFloater -= Time.deltaTime;
     if (_timeToNextFloater < 0) {
       FloatingModuleGenerator.inst.GenerateFloater();
       SetTimeToNextFloater();

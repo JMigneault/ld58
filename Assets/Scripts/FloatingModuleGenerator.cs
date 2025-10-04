@@ -4,6 +4,10 @@ using DG.Tweening; // Import DOTween
 public class FloatingModuleGenerator {
   public static FloatingModuleGenerator inst;
 
+  public FloatingModuleGenerator() {
+    inst = this;
+  }
+
   public Module Generate() {
     Module generated = null;
 

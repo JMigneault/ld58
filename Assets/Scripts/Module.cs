@@ -127,7 +127,9 @@ public class Module : MonoBehaviour {
     // Set HP to 1.0f and disable its UI initially
     mod._maxHp = 2;
     mod.SetHealth(2);
-
+    mod._uiHpBar.SetActive(false);
+    mod._uiGenericBar.SetActive(false);
+    mod._uiPowered.SetActive(false);
     mod._hasProtrusion = false;
 
     switch (spec._type) {
@@ -155,15 +157,16 @@ public class Module : MonoBehaviour {
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "W";
         }
-        if (mod._uiGenericBar != null) {
-          mod._uiGenericBar.SetActive(true); // Re-enable generic bar for Weapon type
-        }
+        mod._needsPower = true;
+        mod._uiPowered.SetActive(true);
         // TODO: Initialize Weapon module specifics
         break;
       case ModuleType.Shield:
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "S";
         }
+        mod._needsPower = true;
+        mod._uiPowered.SetActive(true);
         // TODO: Initialize Shield module specifics
         break;
       default:

@@ -6,7 +6,7 @@ public class InputHandler : MonoBehaviour {
     Placer.inst.Hover(Input.mousePosition);
     if (Input.GetMouseButtonDown(0)) {
       Placer.inst.TryPlacing(Input.mousePosition);
-    } else if (Input.GetMouseButtonDown(1)) {
+    } else if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Space)) {
       Placer.inst.RotateCurrent();
     }
 
