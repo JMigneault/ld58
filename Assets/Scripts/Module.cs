@@ -13,6 +13,23 @@ public enum ModuleType {
   Shield
 }
 
+public class ModuleSpec {
+  public ModuleType _type;
+  public bool[] _connects; // An array of 4 booleans for U, R, D, L
+  public dir _protrusionDir; // The direction of the protrusion
+
+  // Primary constructor
+  public ModuleSpec(ModuleType type, bool[] connects, dir protrusionDir = dir.U) {
+    _type = type;
+    _connects = connects;
+    _protrusionDir = protrusionDir;
+  }
+
+  // Constructor that defaults connections to false
+  public ModuleSpec(ModuleType type, dir protrusionDir = dir.U)
+      : this(type, new bool[4] { true, true, true, true }, protrusionDir) {
+  }
+}
 
 public class Module : MonoBehaviour {
   public static float _moduleSize = 1.0f;
@@ -45,18 +62,17 @@ public class Module : MonoBehaviour {
   private GameObject[] _uiConnectorsOuter = new GameObject[4];
   private GameObject[] _uiProtrusions = new GameObject[4];
 
-/*
+  [Header("Attributes")]
+  public int _maxHealth;
+  public bool _needsPower;
+
+  [Header("Stats")]
   public int _hp;
+  public bool _powered;
 
-  public int _statHull;
-  public int _statEnergy;
-
-  // At most, one of these is non-null;
-  public Weapon _weapon;
-  public Shield _shield;
-  public Engine _engine;
-  */
+  [Header("Type Specific")]
   public ModuleType _type;
+  public Weapon _weapon;
 
   public bool[] _connects = new bool[4]; // Array to store connections for U, R, D, L
 
@@ -67,14 +83,12 @@ public class Module : MonoBehaviour {
   private bool _isPowered = false;
   private float _currentGenericBarFill = 0.0f;
 
-  public static Module MakeModule(ModuleType type) {
+  public static Module MakeModule(ModuleSpec spec) {
     var mod = GameObject.Instantiate(Helpers.Prefab("Module")).GetComponent<Module>();
-    mod._type = type;
-    
-    // Initialize all connections to true by default
-    for (int i = 0; i < mod._connects.Length; i++) {
-      mod._connects[i] = true;
-    }
+    mod._type = spec._type;
+
+    for (int i = 0; i < _connects.Length; i++)
+      mod._connects[i] = spec._connects[i];
 
     // Assign existing UI GameObjects to the new arrays by direction
     mod._uiWires[(int)dir.U] = mod._uiWireU;
@@ -106,14 +120,9 @@ public class Module : MonoBehaviour {
 
     // Set HP to 1.0f and disable its UI initially
     mod.SetHealth(1.0f);
-    if (mod._uiHpBar != null) {
-      mod._uiHpBar.SetActive(false); // Disable HP bar by default
-    }
 
-    // Disable the generic bar by default
-    if (mod._uiGenericBar != null) {
-      mod._uiGenericBar.SetActive(false);
-    }
+    _maxHp = 2;
+    _hp = hp;
 
     switch (type) {
       case ModuleType.Core:
@@ -168,7 +177,9 @@ public class Module : MonoBehaviour {
 
   }
 
-  public void SetHealth(float prop) {
+  public void SetHealth(int hp) {
+    _hp = hp;
+    float prop = hp / _maxHp;
     if (prop < 0 || prop > 1f)
       Helpers.Error("Invalid health prop: {0}", prop);
     
@@ -212,12 +223,29 @@ public class Module : MonoBehaviour {
       Helpers.Error("Invalid bar prop: {0}", prop);
 
     _currentGenericBarFill = prop;
+
     if (_uiGenericBar != null) {
+      // Ensure the UI bar is active when bar is set, unless it's being fully emptied to 0.0f
+      if (prop > 0.0f) {
+        _uiGenericBar.SetActive(true);
+        // Kill any pending disable tweens if bar is no longer empty
+        _uiGenericBar.transform.DOKill(true);
+      }
+
       UIBar genericBar = _uiGenericBar.GetComponentInChildren<UIBar>();
       if (genericBar != null) {
         genericBar.SetFill(prop);
       } else {
         Helpers.Error("UIBar component not found in _uiGenericBar children.");
+      }
+
+      // If bar is empty, disable the UI bar after a delay
+      if (prop == 0.0f) {
+        DOTween.Sequence().AppendInterval(5.0f).OnComplete(() => {
+          if (_currentGenericBarFill == 0.0f) { // Re-check condition in case bar value changed during delay
+            _uiGenericBar.SetActive(false);
+          }
+        });
       }
     }
   }

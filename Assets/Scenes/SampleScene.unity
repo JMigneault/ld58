@@ -393,6 +393,10 @@ PrefabInstance:
       propertyPath: _barHeight
       value: 0.1
       objectReference: {fileID: 0}
+    - target: {fileID: 1253417838715549116, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6805751057936535829, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
       propertyPath: m_Name
       value: Module
@@ -439,11 +443,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7759179839886235656, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7865497441936819245, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7887126253209289370, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
+      propertyPath: _bgColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7887126253209289370, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
+      propertyPath: _bgColor.g
+      value: 0.3214593
+      objectReference: {fileID: 0}
+    - target: {fileID: 7887126253209289370, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
+      propertyPath: _bgColor.r
+      value: 0.99215686
       objectReference: {fileID: 0}
     - target: {fileID: 8459255899902778957, guid: f6b1d4eeb1699374ebde5ea6cd6f6abd, type: 3}
       propertyPath: _uiGenericBar
