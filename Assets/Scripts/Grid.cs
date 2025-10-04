@@ -61,7 +61,8 @@ public class Grid {
     float gridWidth = _dimX * Module._moduleSize;
     float gridHeight = _dimY * Module._moduleSize;
     float startX = parentPos.x - (gridWidth / 2f) + (Module._moduleSize / 2f);
-    float startY = parentPos.y - (gridHeight / 2f) + (Module._moduleSize / 2f);
+    // For inverted Y, coord.y = 0 is the top. So, startY should be the world Y of the top-most row's center.
+    float startY = parentPos.y + (gridHeight / 2f) - (Module._moduleSize / 2f);
     return new Vector2(startX, startY);
   }
 
@@ -69,7 +70,7 @@ public class Grid {
     Vector2 originOffset = _GetGridOriginOffset();
 
     float posX = originOffset.x + coord.x * Module._moduleSize;
-    // Invert the y-coordinate: highest world y for coord.y = 0, decreases as coord.y increases
+    // Y-coordinate is inverted: highest world y for coord.y = 0, decreases as coord.y increases
     float posY = originOffset.y - coord.y * Module._moduleSize;
 
     return new Vector2(posX, posY);
