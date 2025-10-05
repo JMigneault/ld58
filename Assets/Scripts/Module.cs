@@ -75,7 +75,7 @@ public class Module : MonoBehaviour {
 
   [Header("Type Specific")]
   public ModuleType _type;
-  // public Weapon _weapon;
+  public Weapon _weapon;
 
   public bool[] _connects = new bool[4]; // Array to store connections for U, R, D, L
 
@@ -159,7 +159,10 @@ public class Module : MonoBehaviour {
           mod._uiLabel.GetComponent<TMP_Text>().text = "G";
         }
         mod._needsPower = true;
+        // TODO XXX FOR TESTING
+        mod._powered = true;
         mod._uiPowered.SetActive(true);
+        mod._weapon = mod.gameObject.AddComponent<Weapon>();
         // TODO: Initialize Weapon module specifics
         break;
       case ModuleType.Shield:
@@ -286,6 +289,18 @@ public class Module : MonoBehaviour {
           }
         });
       }
+    }
+  }
+
+  public void Damage() {
+    SetHealth(_hp - 1); // Lower hp and update UI
+    if (_hp <= 0) {
+      // Destroy the module's GameObject
+      if (_cell != null) {
+        _cell.Module = null; // Clear the module from the cell
+      }
+      Destroy(gameObject);
+      Helpers.Log("Module destroyed!");
     }
   }
 
