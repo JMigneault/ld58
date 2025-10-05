@@ -163,9 +163,10 @@ public class Grid {
     }
 
     // Second pass: Determine which modules are shielded (adjacent to powered shield module).
+    int nEngines = 1;
     foreach (Module module in allModules) {
       if (module._type == ModuleType.Engine)
-        SetEnginePower(_enginePower + 1);
+        nEngines++;
 
       bool adjacentToPoweredShield = false;
       Module shieldedBy = null;
@@ -191,6 +192,7 @@ public class Grid {
       module.SetShielded(shieldedBy);
     }
 
+    SetEnginePower(nEngines);
   }
 
   public void DestroyShip() {

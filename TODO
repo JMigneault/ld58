@@ -1,21 +1,12 @@
 
 Features
-- Implement (more) modules
 - More enemy generation
 - Tweak/change all colors
 - Per module HP max
-- Ships turning
 - Module spawn algo
-- Reuse shot modules
-- Make weapons lower bar and then restore, just like battery/shield
-  - add second color for when bar is restoring?
-- Choose font
-- Blow up ships when core is destroyed
 - Polish module UI.
-- Segmented health bars
 
 Bugs
-- placement doesn't work with ship rotation
 - hovering a tile over an existing one is pretty glitchy
 
 Juice
@@ -26,3 +17,4 @@ Stretch
 - Sound effects
 - Music
 - more modules (eg. different weapons, boost)
+- Segmented health bars
