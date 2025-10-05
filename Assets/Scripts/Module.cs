@@ -319,11 +319,16 @@ public class Module : MonoBehaviour {
       SetHealth(_hp - 1); // Lower hp and update UI
       if (_hp <= 0) {
         // Destroy the module's GameObject
-        if (_cell != null) {
-          _cell.Module = null; // Clear the module from the cell
+        if (_type == ModuleType.Core) {
+          _cell._grid.DestroyShip();
+          Helpers.Log("Ship destroyed!");
+        } else {
+          if (_cell != null) {
+            _cell.Module = null; // Clear the module from the cell
+          }
+          Destroy(gameObject);
+          Helpers.Log("Module destroyed!");
         }
-        Destroy(gameObject);
-        Helpers.Log("Module destroyed!");
       }
     }
   }

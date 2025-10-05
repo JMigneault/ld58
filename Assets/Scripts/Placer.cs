@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Placer {
   public static Placer inst;
+  bool _lock = false;
   public Grid _grid;
   public TileHighlight[,] _highlightTiles; // Changed to a 2D array of TileHighlight
 
@@ -50,6 +51,7 @@ public class Placer {
   }
 
   public void StartPlacing(Module module) {
+    if (_lock) return;
     // Clear existing highlights before finding new ones
     StopPlacing();
 
@@ -252,6 +254,11 @@ public class Placer {
       _currentModule.Rotate();
       EnableHighlights();
     }
+  }
+
+  public void GameOver() {
+    StopPlacing();
+    _lock = true;
   }
 
 }

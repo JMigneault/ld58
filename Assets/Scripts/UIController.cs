@@ -5,6 +5,8 @@ public class UIController : MonoBehaviour {
   
   public static UIController inst;
 
+  bool _lockTT = false;
+
   public GameObject _enginePower;
   public GameObject _scoreModules;
   public GameObject _scoreEnemies;
@@ -18,6 +20,7 @@ public class UIController : MonoBehaviour {
   }
 
   public void SetTooltip(string text) {
+    if (_lockTT) return;
     if (text == "") {
       // Default text
       text = "LClick floating modules\nRClick to rotate selected module\nA and D to rotate ship";
@@ -64,6 +67,11 @@ public class UIController : MonoBehaviour {
         Helpers.Error("TMP_Text component not found in _scoreEnemies children.");
       }
     }
+  }
+
+  public void GameOver() {
+    SetTooltip("GAME OVER");
+    _lockTT = true;
   }
 
 }

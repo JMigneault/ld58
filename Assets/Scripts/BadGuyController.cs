@@ -10,6 +10,7 @@ public class BadGuyController {
 
   bool _rightFull = false;
   bool _leftFull = false;
+  private System.Collections.Generic.List<Grid> _badGuys = new System.Collections.Generic.List<Grid>();
 
   public BadGuyController() {
     inst = this;
@@ -32,6 +33,8 @@ public class BadGuyController {
 
     // Generate modules for the enemy ship.
     GenerateAShip(enemyGrid, enemyShipRoot);
+
+    _badGuys.Add(enemyGrid);
 
     // Position the enemy ship:
     // 1. To the right of the player's ship.
@@ -85,6 +88,14 @@ public class BadGuyController {
     ship.AddModule(Module.MakeModule(connSpec), new Coord(1, 2));
 
     Helpers.Log("BadGuyController: Generated a scout ship.");
+  }
+
+  public void BadGuyDied(Grid guy) {
+    _badGuys.Remove(guy);
+  }
+
+  public void GameOver() {
+    // TODO: bad guys fly away, don't spawn any more
   }
 
 }

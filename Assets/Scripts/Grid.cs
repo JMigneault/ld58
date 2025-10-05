@@ -191,4 +191,30 @@ public class Grid {
 
   }
 
+  public void DestroyShip() {
+    if (_players) {
+      UIController.inst.GameOver();
+      BadGuyController.inst.GameOver();
+      Placer.inst.GameOver();
+    } else {
+      BadGuyController.inst.BadGuyDied(this);
+    }
+
+    // Destroy all modules in the grid
+    for (int x = 0; x < _dimX; x++) {
+      for (int y = 0; y < _dimY; y++) {
+        Module module = _cells[x, y].Module;
+        if (module != null) {
+          UnityEngine.Object.Destroy(module.gameObject);
+          _cells[x, y].Module = null; // Clear the reference in the cell
+        }
+      }
+    }
+
+    // Destroy the parent GameObject of the grid
+    if (_parent != null) {
+      UnityEngine.Object.Destroy(_parent);
+    }
+  }
+
 }
