@@ -22,6 +22,8 @@ public class Init {
 
     ship.GetComponent<ShipSizer>().Size(5, 5);
 
+    var sih = ship.AddComponent<ShipInputHandler>();
+
     _grid = new Grid(5, 5, ship, true);
     _grid.AddModule(Module.MakeModule(ModuleType.Core), new Coord(2, 2));
 

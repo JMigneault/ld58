@@ -12,6 +12,7 @@ Features
 - Choose font
 - Blow up ships when core is destroyed
 - Polish module UI.
+- Segmented health bars
 
 Bugs
 - placement doesn't work with ship rotation
