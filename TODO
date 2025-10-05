@@ -4,6 +4,10 @@ Features
 - Polish module UI.
 - Make different strength guns (1, 2, 3?)
 
+- Fix multiple spawn bug; fix multiple module bug
+
+- Colored/Powered shader effect
+
 Bugs
 - hovering a tile over an existing one is pretty glitchy
 - tween warnings
