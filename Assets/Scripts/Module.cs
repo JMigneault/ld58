@@ -221,9 +221,11 @@ public class Module : MonoBehaviour {
 
   public void SetHealth(int hp) {
     _hp = hp;
-    float prop = hp / _maxHp;
+    float prop = hp / (1.0f * _maxHp);
     if (prop < 0 || prop > 1f)
       Helpers.Error("Invalid health prop: {0}", prop);
+
+    Helpers.Log("health {0} prop {1}", hp, prop);
     
     _currentHealthFill = prop;
 
