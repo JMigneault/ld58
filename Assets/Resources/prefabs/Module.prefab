@@ -2774,6 +2774,8 @@ MonoBehaviour:
   _uiProtrusionR: {fileID: 1125883934080536898}
   _uiProtrusionD: {fileID: 6204515540752332967}
   _uiProtrusionL: {fileID: 2223546446105682018}
+  _powerHaloColor: {r: 1, g: 0.95686275, b: 0, a: 0}
+  _shieldHaloColor: {r: 0, g: 0.5999999, b: 1, a: 0}
   _maxHp: 0
   _needsPower: 0
   _hasProtrusion: 0
