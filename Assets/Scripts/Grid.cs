@@ -48,6 +48,9 @@ public class Grid {
         module._cell = targetCell;
         module.transform.position = CoordToPosition(coord, Helpers._modZ);
         module.transform.parent = _parent.transform;
+
+        UpdateStats();
+
         return true;
       }
     }
@@ -93,6 +96,77 @@ public class Grid {
     int coordY = Mathf.RoundToInt((originOffset.y - position.y) / Module._moduleSize);
 
     return new Coord(coordX, coordY);
+  }
+
+  public void UpdateStats() {
+    // Collect all modules first to avoid issues with modifying the grid while iterating
+    List<Module> allModules = new List<Module>();
+    for (int x = 0; x < _dimX; x++) {
+      for (int y = 0; y < _dimY; y++) {
+        Module module = _cells[x, y].Module;
+        if (module != null) {
+          allModules.Add(module);
+        }
+      }
+    }
+
+    // First pass: Determine which modules are powered.
+    foreach (Module module in allModules) {
+      // Reset power and halo states for this update cycle. Halos will be set in the second pass.
+      module.SetPower(false);
+      module._powered = false; // Reset internal powered state
+      module.SetShowHalo(false); // Reset halo here, will be set in second pass if applicable
+
+      bool adjacentToEnergy = false;
+
+      // Check all 8 neighboring tiles (cardinal and diagonal) for energy sources
+      if (module._needsPower) {
+        Coord moduleCoord = module._cell._coord;
+        for (int dx = -1; dx <= 1; dx++) {
+          for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) continue; // Skip the module itself
+
+            Coord neighborCoord = new Coord(moduleCoord.x + dx, moduleCoord.y + dy);
+
+            if (ValidCoord(neighborCoord)) {
+              Module neighborModule = GetModule(neighborCoord);
+              if (neighborModule != null && neighborModule._type == ModuleType.Energy) {
+                adjacentToEnergy = true;
+                break; // Found an energy source, no need to check further neighbors for power
+              }
+            }
+          }
+          if (adjacentToEnergy) break;
+        }
+        // Apply power if the module needs it and is adjacent to an Energy module
+        module.SetPower(adjacentToEnergy);
+      }
+
+    }
+
+    // Second pass: Determine which modules are shielded (adjacent to powered shield module).
+    foreach (Module module in allModules) {
+      bool adjacentToPoweredShield = false;
+      Coord moduleCoord = module._cell._coord;
+      for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+          if (dx == 0 && dy == 0) continue; // Skip the module itself
+
+          Coord neighborCoord = new Coord(moduleCoord.x + dx, moduleCoord.y + dy);
+
+          if (ValidCoord(neighborCoord)) {
+            Module neighborModule = GetModule(neighborCoord);
+            if (neighborModule != null && neighborModule._type == ModuleType.Shield && neighborModule._powered) {
+              adjacentToPoweredShield = true;
+              break; // Found a powered shield source, no need to check further neighbors for shielding
+            }
+          }
+        }
+        if (adjacentToPoweredShield) break;
+      }
+
+      module.SetShielded(adjacentToPoweredShield);
+    }
   }
 
 }

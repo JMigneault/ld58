@@ -39,6 +39,7 @@ public class Module : MonoBehaviour {
   public GameObject _uiLabel;
   public GameObject _uiHpBar;
   public GameObject _uiPowered;
+  public GameObject _uiShielded;
   public GameObject _uiGenericBar;
   public GameObject _uiHalo;
   public GameObject _uiWireU;
@@ -75,6 +76,7 @@ public class Module : MonoBehaviour {
 
   [Header("Stats")]
   public int _hp;
+  public bool _shielded;
   public bool _powered;
 
   [Header("Type Specific")]
@@ -87,7 +89,6 @@ public class Module : MonoBehaviour {
 
   // Fields to save current UI values
   private float _currentHealthFill = 1.0f;
-  private bool _isPowered = false;
   private float _currentGenericBarFill = 0.0f;
 
   public static Module MakeModule(ModuleType type) {
@@ -135,6 +136,7 @@ public class Module : MonoBehaviour {
     mod._uiHpBar.SetActive(false);
     mod._uiGenericBar.SetActive(false);
     mod._uiPowered.SetActive(false);
+    mod._uiShielded.SetActive(false);
     mod._uiHalo.SetActive(false);
     mod._hasProtrusion = false;
 
@@ -261,7 +263,7 @@ public class Module : MonoBehaviour {
   }
 
   public void SetPower(bool powered) {
-    _isPowered = powered;
+    _powered = powered;
     if (_uiPowered != null) {
       _uiPowered.SetActive(powered);
     }
@@ -366,6 +368,10 @@ public class Module : MonoBehaviour {
 
   public void StopProjecting() {
     SetShowHalo(false);
+  }
+  
+  public void SetShielded(bool shielded) {
+    _uiShielded.SetActive(shielded);
   }
 
   public string GetTooltip() {

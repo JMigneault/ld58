@@ -13,10 +13,12 @@ public class FloatingModuleGenerator {
 
     float v = Random.value;
 
-    if (v < 0.3f) {
+    if (v < 0.25f) {
       generated = Module.MakeModule(new ModuleSpec(ModuleType.Energy, new bool[4] { false, true, true, false }) );
-    } else if (v < 0.6f) {
+    } else if (v < 0.5f) {
       generated = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, new bool[4] { false, true, true, true }, dir.U) );
+    } else if (v < 0.75f) {
+      generated = Module.MakeModule(new ModuleSpec(ModuleType.Shield, new bool[4] { true, false, false, true }) );
     } else {
       generated = Module.MakeModule(new ModuleSpec(ModuleType.Connection, new bool[4] { true, true, true, false }) );
     }

@@ -4,8 +4,8 @@ using UnityEngine;
 using System;
 
 public class Cell {
-  Coord _coord;
-  Module _module;
+  public Coord _coord;
+  public Module _module;
   public Grid _grid;
 
   public Module Module {
