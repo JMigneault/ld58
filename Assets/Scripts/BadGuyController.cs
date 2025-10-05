@@ -64,7 +64,6 @@ public class BadGuyController : MonoBehaviour {
 
   public float _spawnInterval = 5.0f; // Time between potential spawns
   public float _timeToNextSpawn = 0f;
-  public float _lastSpawnTriggerTime = 0f;
 
   private SpawnSlot[] _slotOccupancy = new SpawnSlot[4]; // Stores the type of ship in the slot, or None if empty
   private Vector3[] _spawnPositions = new Vector3[4];
@@ -96,10 +95,8 @@ public class BadGuyController : MonoBehaviour {
     _timeToNextSpawn -= Time.deltaTime;
 
     if (_timeToNextSpawn <= 0) {
-      Helpers.Log("SPAWNING");
       AttemptSpawn();
       _timeToNextSpawn = _spawnInterval; // Reset timer for next attempt
-      _lastSpawnTriggerTime = Time.time;
     }
   }
 

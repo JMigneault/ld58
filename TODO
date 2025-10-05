@@ -8,6 +8,11 @@ Features
 
 - Colored/Powered shader effect
 
+Balance
+- Add a way to gaurantee engines
+- reduce number of connectors
+- scale out of peons faster
+
 Bugs
 - hovering a tile over an existing one is pretty glitchy
 - tween warnings
