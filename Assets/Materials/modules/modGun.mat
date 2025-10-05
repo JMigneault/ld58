@@ -82,7 +82,7 @@ Material:
     m_Colors:
     - _BorderColor: {r: 0.1764706, g: 0.1764706, b: 0.25490198, a: 1}
     - _CenterColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Color: {r: 1, g: 0.36760843, b: 0.20588231, a: 1}
+    - _Color: {r: 0.70199996, g: 0.4181357, b: 0.39803398, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &2156621008150594417
