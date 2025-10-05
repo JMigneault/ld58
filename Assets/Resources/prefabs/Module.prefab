@@ -2672,9 +2672,9 @@ MonoBehaviour:
   _uiProtrusionL: {fileID: 2223546446105682018}
   _powerHaloColor: {r: 1, g: 0.95686275, b: 0, a: 0.29803923}
   _shieldHaloColor: {r: 0, g: 0.5999999, b: 1, a: 0.29803923}
-  _engineLabelColor: {r: 0.95699996, g: 0.42306158, b: 0.06124801, a: 0}
-  _coreLabelColor: {r: 0.865, g: 0.30102006, b: 0.800861, a: 0}
-  _weaponLabelColor: {r: 0.78039217, g: 0.19615689, b: 0.1716863, a: 0}
+  _engineLabelColor: {r: 0.95699996, g: 0.42306158, b: 0.06124801, a: 1}
+  _coreLabelColor: {r: 0.865, g: 0.30102006, b: 0.800861, a: 1}
+  _weaponLabelColor: {r: 0.78039217, g: 0.19615689, b: 0.1716863, a: 1}
   _energyLabelColor: {r: 0.922, g: 0.8822275, b: 0, a: 1}
   _shieldLabelColor: {r: 0, g: 0.5699999, b: 0.95, a: 1}
   _connectorConnectsColor: {r: 0.7807819, g: 0.18444708, b: 0.7882353, a: 1}
