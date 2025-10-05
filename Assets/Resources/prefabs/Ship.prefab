@@ -175,6 +175,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6096865940718599767}
+  - component: {fileID: 2554549615168937557}
   m_Layer: 0
   m_Name: Ship
   m_TagString: Untagged
@@ -199,3 +200,18 @@ Transform:
   - {fileID: 8375106605697580678}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2554549615168937557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3969535712674286208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a37884e9b834e9a49a8997256c485d91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _outerColorTop: {r: 0.70980394, g: 0.70980394, b: 0.70980394, a: 0}
+  _outerColorBot: {r: 0.49019608, g: 0.49019608, b: 0.49019608, a: 0}
+  _glowColor: {r: 0.30588236, g: 0.2901961, b: 0.35686275, a: 0}

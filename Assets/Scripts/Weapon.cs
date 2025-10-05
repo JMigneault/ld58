@@ -57,6 +57,7 @@ public class Weapon : MonoBehaviour {
     }
 
     GameObject bulletGO = GameObject.Instantiate(bulletPrefab);
+    bulletGO.GetComponent<Bullet>()._grid = _module._cell._grid;
 
     Vector3 protrusionVector = GetProtrusionVector(_module._protrusionDir);
     // Spawn slightly outside the module, adding a small buffer (0.1f)

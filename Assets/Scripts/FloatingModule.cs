@@ -3,7 +3,8 @@ using DG.Tweening; // Import DOTween
 
 public class FloatingModule : MonoBehaviour {
   private Module _module;
-  private BoxCollider2D _boxCollider;
+
+  public bool _floating = false;
 
   public int _slotIdx = -1;
 
@@ -33,32 +34,29 @@ public class FloatingModule : MonoBehaviour {
       Helpers.Error("FloatingModule requires a Module component.");
       return;
     }
-    _boxCollider = GetComponent<BoxCollider2D>();
-    if (_boxCollider == null) {
-      Helpers.Error("FloatingModule requires a BoxCollider2D component.");
-      return;
-    }
     
     EnableFloat(false);
   }
 
   void OnMouseDown() {
+    if (!_floating) return;
+
     if (Placer.inst._currentModule == null) {
       Placer.inst.StopPlacing(); // release current mod
     }
 
-    transform.DOScale(_originalScale, 0.1f);
+    if (GoodToScale())
+      transform.DOScale(_originalScale, 0.1f);
     EnableFloat(false);
     Placer.inst.StartPlacing(_module);
   }
 
   public void EnableFloat(bool enabled) {
+    _floating = enabled;
     startPlacingThisFrame = true;
     if (enabled) {
-      _boxCollider.enabled = true;
       StartFloating();
     } else {
-      _boxCollider.enabled = false;
       StopFloatingAnimation();
     }
   }
@@ -110,13 +108,18 @@ public class FloatingModule : MonoBehaviour {
 
   }
 
+  public bool GoodToScale() {
+    return _module._cell == null || (_module._cell._grid == Grid._playersGrid);
+  }
+
   void OnMouseEnter() {
-    transform.DOScale(_originalScale * 1.1f, 0.1f);
+    if (GoodToScale())
+      transform.DOScale(_originalScale * 1.1f, 0.1f);
   }
 
   void OnMouseExit() {
     // Only scale down if this module is not currently being placed (i.e., Placer.inst._currentModule is null or not this module)
-    if (Placer.inst._currentModule == null || Placer.inst._currentModule != _module) {
+    if ((Placer.inst._currentModule == null || Placer.inst._currentModule != _module) && GoodToScale()) {
         transform.DOScale(_originalScale, 0.1f);
     }
   }

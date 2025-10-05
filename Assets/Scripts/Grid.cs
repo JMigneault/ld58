@@ -5,20 +5,23 @@ using System;
 
 public class Grid {
 
+  public static Grid _playersGrid;
   public GameObject _parent;
 
   public int _dimX;
   public int _dimY;
   Cell[,] _cells;
 
-  public Grid(int dimX, int dimY, GameObject parent) {
+  public Grid(int dimX, int dimY, GameObject parent, bool players = false) {
+    if (players)
+      _playersGrid = this;
     _parent = parent;
     _dimX = dimX;
     _dimY = dimY;
     _cells = new Cell[dimX, dimY];
     for (int x = 0; x < dimX; x++) {
       for (int y = 0; y < dimY; y++) {
-        _cells[x, y] = new Cell(new Coord(x, y));
+        _cells[x, y] = new Cell(new Coord(x, y), this);
       }
     }
   }
@@ -42,6 +45,7 @@ public class Grid {
         targetCell.Module = module;
         module._cell = targetCell;
         module.transform.position = CoordToPosition(coord, Helpers._modZ);
+        module.transform.parent = _parent.transform;
         return true;
       }
     }

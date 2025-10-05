@@ -18,7 +18,9 @@ public class Init {
 
     var ship = GameObject.Instantiate(Helpers.Prefab("Ship"));
 
-    _grid = new Grid(5, 5, ship);
+    ship.GetComponent<ShipSizer>().Size(5, 5);
+
+    _grid = new Grid(5, 5, ship, true);
     _grid.AddModule(Module.MakeModule(ModuleType.Core), new Coord(2, 2));
 
     Placer placer = new Placer(_grid);
@@ -27,6 +29,8 @@ public class Init {
     fmg.GenerateFloater();
     fmg.GenerateFloater();
     fmg.GenerateFloater();
+
+    var bgc = new BadGuyController();
   }
 
 }

@@ -8,6 +8,7 @@ Features
 
 Bugs
 - placement rules aren't right
+- placement doesn't work with ship rotation
 
 Juice
 - scale up floating mods when hovered
