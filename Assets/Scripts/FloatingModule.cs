@@ -45,8 +45,7 @@ public class FloatingModule : MonoBehaviour {
       Placer.inst.StopPlacing(); // release current mod
     }
 
-    if (GoodToScale())
-      transform.DOScale(_originalScale, 0.1f);
+    _module.SetScaled(false);
     EnableFloat(false);
     Placer.inst.StartPlacing(_module);
   }
@@ -108,20 +107,12 @@ public class FloatingModule : MonoBehaviour {
 
   }
 
-  public bool GoodToScale() {
-    return _module._cell == null || (_module._cell._grid == Grid._playersGrid);
-  }
-
   void OnMouseEnter() {
-    if (GoodToScale())
-      transform.DOScale(_originalScale * 1.1f, 0.1f);
+    _module.Hover();
   }
 
   void OnMouseExit() {
-    // Only scale down if this module is not currently being placed (i.e., Placer.inst._currentModule is null or not this module)
-    if ((Placer.inst._currentModule == null || Placer.inst._currentModule != _module) && GoodToScale()) {
-        transform.DOScale(_originalScale, 0.1f);
-    }
+    _module.UnHover();
   }
 
   void LateUpdate() {

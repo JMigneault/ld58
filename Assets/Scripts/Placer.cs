@@ -88,8 +88,10 @@ public class Placer {
       Coord hoverCoord = new Coord(-1, -1);
       if (_grid.ValidCoord(currentHoveredCoord)) {
         Coord placementCandidate = ChoosePlacementCandidate(mousePosition);
+        _currentModule.StopProjecting();
         if (placementCandidate.x != -1) { // A valid candidate exists
           hoverCoord = placementCandidate;
+          _currentModule.ProjectingCoord(hoverCoord);
         } else { // No valid candidate, place at current hovered coord
           hoverCoord = currentHoveredCoord;
         }

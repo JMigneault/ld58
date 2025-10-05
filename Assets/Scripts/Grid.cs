@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 
 public class Grid {
+  public bool _players;
 
   public static Grid _playersGrid;
   public GameObject _parent;
@@ -13,6 +14,7 @@ public class Grid {
   Cell[,] _cells;
 
   public Grid(int dimX, int dimY, GameObject parent, bool players = false) {
+    _players = players;
     if (players)
       _playersGrid = this;
     _parent = parent;

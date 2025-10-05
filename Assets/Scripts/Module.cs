@@ -40,6 +40,7 @@ public class Module : MonoBehaviour {
   public GameObject _uiHpBar;
   public GameObject _uiPowered;
   public GameObject _uiGenericBar;
+  public GameObject _uiHalo;
   public GameObject _uiWireU;
   public GameObject _uiWireR;
   public GameObject _uiWireD;
@@ -62,6 +63,9 @@ public class Module : MonoBehaviour {
   private GameObject[] _uiConnectorsInner = new GameObject[4];
   private GameObject[] _uiConnectorsOuter = new GameObject[4];
   private GameObject[] _uiProtrusions = new GameObject[4];
+
+  public Color _powerHaloColor;
+  public Color _shieldHaloColor;
 
   [Header("Attributes")]
   public int _maxHp;
@@ -131,6 +135,7 @@ public class Module : MonoBehaviour {
     mod._uiHpBar.SetActive(false);
     mod._uiGenericBar.SetActive(false);
     mod._uiPowered.SetActive(false);
+    mod._uiHalo.SetActive(false);
     mod._hasProtrusion = false;
 
     switch (spec._type) {
@@ -304,6 +309,63 @@ public class Module : MonoBehaviour {
       Destroy(gameObject);
       Helpers.Log("Module destroyed!");
     }
+  }
+
+  public void SetShowHalo(bool show) {
+    if (_uiHalo != null) {
+      _uiHalo.SetActive(show);
+      if (show) {
+        Renderer haloRenderer = _uiHalo.GetComponent<Renderer>();
+        if (haloRenderer != null && haloRenderer.material != null) {
+          Color haloColor;
+          if (_type == ModuleType.Shield) {
+            haloColor = _shieldHaloColor;
+          } else if (_type == ModuleType.Energy) {
+            // Default to power halo color for other powered modules (Core, Energy, Weapon, Engine)
+            haloColor = _powerHaloColor;
+          } else {
+            _uiHalo.SetActive(false);
+            return;
+          }
+          haloRenderer.material.SetColor("_Color", haloColor);
+        } else {
+          Helpers.Error("Halo UI element is missing Renderer or Material.");
+        }
+      }
+    }
+  }
+
+  public bool GoodToScale() {
+    return GetComponent<FloatingModule>()._floating || (_cell != null && _cell._grid._players);
+  }
+
+  public void SetScaled(bool scaled) {
+    if (GoodToScale()) {
+      if (scaled)
+        transform.DOScale(1.1f, 0.1f);
+      else
+        transform.DOScale(1.0f, 0.1f);
+    }
+  }
+
+  public void Hover() {
+    SetScaled(true);
+    if (_cell != null) {
+      SetShowHalo(true);
+    }
+  }
+
+  public void UnHover() {
+    SetScaled(false);
+    SetShowHalo(false);
+  }
+
+  public void ProjectingCoord(Coord coord) {
+    SetShowHalo(true);
+  }
+
+  public void StopProjecting() {
+    SetShowHalo(false);
   }
 
   public string GetTooltip() {
