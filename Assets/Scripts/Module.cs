@@ -323,11 +323,7 @@ public class Module : MonoBehaviour {
           _cell._grid.DestroyShip();
           Helpers.Log("Ship destroyed!");
         } else {
-          if (_cell != null) {
-            _cell.Module = null; // Clear the module from the cell
-          }
-          Destroy(gameObject);
-          Helpers.Log("Module destroyed!");
+          DestroyModule();
         }
       }
     }
@@ -408,6 +404,33 @@ public class Module : MonoBehaviour {
       } else {
         Helpers.Error("UIBar component not found in _uiGenericBar children.");
       }
+    }
+  }
+
+  public void DestroyModule() {
+    bool players = _cell._grid._players;
+
+    if (_cell != null) {
+      _cell.Module = null; // Clear the module from its cell
+      _cell = null; // Clear the cell reference in the module
+    }
+
+    if (!players && UnityEngine.Random.value < 0.5f) {
+      // 50% chance for this module to start floating
+      FloatingModule floatingModule = GetComponent<FloatingModule>();
+      if (floatingModule != null) {
+        floatingModule.EnableFloat(true);
+        transform.parent = null;
+        Helpers.Log("Module is now floating!");
+      } else {
+        // Fallback: If FloatingModule component is missing, destroy it
+        Helpers.Error("FloatingModule component not found on module. Destroying instead of floating.");
+        GameObject.Destroy(gameObject);
+      }
+    } else {
+      // Otherwise, destroy the module
+      GameObject.Destroy(gameObject);
+      Helpers.Log("Module was destroyed.");
     }
   }
 

@@ -63,6 +63,8 @@ public class FloatingModule : MonoBehaviour {
   private void StartFloating() {
     StopFloatingAnimation(); // Ensure no previous tweens are running
 
+    transform.parent = null;
+
     if (_slotIdx == -1) {
       _slotIdx = FloatingModuleTracker.inst.GrabEmptySlot();
       Vector2 slotPos2D = FloatingModuleTracker.inst.SlotToPosition(_slotIdx);

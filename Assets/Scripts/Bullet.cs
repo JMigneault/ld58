@@ -6,6 +6,11 @@ public class Bullet : MonoBehaviour {
 
   [SerializeField] private float _speed = 10.0f;
 
+  void Start() {
+    // Bullets delete themselves after 5 seconds
+    Destroy(gameObject, 5.0f);
+  }
+
   void Update() {
     transform.Translate(Vector3.up * _speed * Time.deltaTime);
   }

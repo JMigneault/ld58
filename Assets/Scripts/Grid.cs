@@ -205,8 +205,7 @@ public class Grid {
       for (int y = 0; y < _dimY; y++) {
         Module module = _cells[x, y].Module;
         if (module != null) {
-          UnityEngine.Object.Destroy(module.gameObject);
-          _cells[x, y].Module = null; // Clear the reference in the cell
+          module.DestroyModule();
         }
       }
     }

@@ -26,7 +26,7 @@ public class TimeLord : MonoBehaviour {
   }
 
   void SetTimeToNextFloater() {
-    _timeToNextFloater = 1f; // XXX TODO Random.value * 10f + 10f; // 10-20 secs
+    _timeToNextFloater = Random.value * 5f + 15f; // 5-15
   }
 
   void SetTimeToNextEnemy() {
