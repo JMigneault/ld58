@@ -13,6 +13,7 @@ public class UIController : MonoBehaviour {
   public GameObject _tooltip;
 
   public int _modulesCollected = -1; // offset initial core
+  public int _enemiesDestroyed = 0; // offset initial core
 
   void Awake() {
     inst = this;
@@ -58,11 +59,12 @@ public class UIController : MonoBehaviour {
     }
   }
 
-  public void SetEnemiesDestroyed(int enemiesDestroyed) {
+  public void IncrEnemiesDestroyed() {
+    _enemiesDestroyed++;
     if (_scoreEnemies != null) {
       TMP_Text enemiesText = _scoreEnemies.GetComponentInChildren<TMP_Text>();
       if (enemiesText != null) {
-        enemiesText.text = $"Enemies\nDestroyed:\n{enemiesDestroyed}";
+        enemiesText.text = $"Enemies\nDestroyed:\n{_enemiesDestroyed}";
       } else {
         Helpers.Error("TMP_Text component not found in _scoreEnemies children.");
       }

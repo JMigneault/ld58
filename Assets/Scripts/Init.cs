@@ -29,6 +29,7 @@ public class Init {
 
     Placer placer = new Placer(_grid);
 
+    new FloatingModuleTracker();
     var fmg = new FloatingModuleGenerator();
     fmg.GenerateFloater();
     fmg.GenerateFloater();

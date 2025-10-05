@@ -337,11 +337,13 @@ public class BadGuyController : MonoBehaviour {
 
     // Free its slot.
     for (int i = 0; i < _slotOccupancy.Length; i++) {
-        if (_slotOccupancy[i] != SpawnSlot.None) {
-          _slotOccupancy[i] = SpawnSlot.None;
-          break;
-        }
+      if (_slotOccupancy[i] != SpawnSlot.None) {
+        _slotOccupancy[i] = SpawnSlot.None;
+        break;
+      }
     }
+
+    UIController.inst.IncrEnemiesDestroyed();
   }
 
   public void GameOver() {

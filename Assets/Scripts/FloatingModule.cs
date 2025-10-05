@@ -22,9 +22,6 @@ public class FloatingModule : MonoBehaviour {
   private Vector3 _slotBasePosition;
 
   void Awake() {
-    if (FloatingModuleTracker.inst == null)
-      new FloatingModuleTracker(); // Ensure tracker is initialized (its constructor sets FloatingModuleTracker.inst)
-    
     _originalScale = transform.localScale;
 
     _slotIdx = -1;
