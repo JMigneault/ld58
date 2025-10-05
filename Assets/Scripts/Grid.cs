@@ -48,8 +48,9 @@ public class Grid {
       if (targetCell.Module == null) {
         targetCell.Module = module;
         module._cell = targetCell;
-        module.transform.position = CoordToPosition(coord, Helpers._modZ);
-        module.transform.parent = _parent.transform;
+        module.transform.SetParent(_parent.transform); // Set parent to grid's parent
+        module.transform.position = CoordToPosition(coord, Helpers._modZ); // Use updated CoordToPosition
+        module.transform.localRotation = Quaternion.identity; // Align module with grid's local orientation
 
         UpdateStats();
 
@@ -73,32 +74,33 @@ public class Grid {
   }
 
   private Vector2 _GetGridOriginOffset() {
-    Vector2 parentPos = _parent.transform.position;
-    float gridWidth = _dimX * Module._moduleSize;
-    float gridHeight = _dimY * Module._moduleSize;
-    float startX = parentPos.x - (gridWidth / 2f) + (Module._moduleSize / 2f);
-    // For inverted Y, coord.y = 0 is the top. So, startY should be the world Y of the top-most row's center.
-    float startY = parentPos.y + (gridHeight / 2f) - (Module._moduleSize / 2f);
-    return new Vector2(startX, startY);
+    // Assuming the _parent's pivot is at the center of the ship,
+    // (0,0) grid cell is top-left.
+    float totalGridWidth = _dimX * Module._moduleSize;
+    float totalGridHeight = _dimY * Module._moduleSize;
+
+    float offsetX = -totalGridWidth / 2f + Module._moduleSize / 2f;
+    float offsetY = totalGridHeight / 2f - Module._moduleSize / 2f; // Top-left of the grid visually
+
+    return new Vector2(offsetX, offsetY);
   }
 
   public Vector3 CoordToPosition(Coord coord, float z = 0.0f) {
-    Vector2 originOffset = _GetGridOriginOffset();
+    Vector2 localGridOffset = _GetGridOriginOffset();
+    float localX = localGridOffset.x + coord.x * Module._moduleSize;
+    float localY = localGridOffset.y - coord.y * Module._moduleSize;
 
-    float posX = originOffset.x + coord.x * Module._moduleSize;
-    // Y-coordinate is inverted: highest world y for coord.y = 0, decreases as coord.y increases
-    float posY = originOffset.y - coord.y * Module._moduleSize;
-
-    return new Vector3(posX, posY, z);
+    Vector3 localCellPosition = new Vector3(localX, localY, z);
+    return _parent.transform.TransformPoint(localCellPosition); // Convert local to world
   }
 
-  public Coord PositionToCoord(Vector2 position) {
-    Vector2 originOffset = _GetGridOriginOffset();
+  public Coord PositionToCoord(Vector2 worldPosition) {
+    Vector3 localPosition = _parent.transform.InverseTransformPoint(worldPosition); // Convert world to local
 
-    // Calculate the coordinate by reversing the CoordToPosition logic
-    int coordX = Mathf.RoundToInt((position.x - originOffset.x) / Module._moduleSize);
-    // Invert the y-coordinate conversion
-    int coordY = Mathf.RoundToInt((originOffset.y - position.y) / Module._moduleSize);
+    Vector2 localGridOffset = _GetGridOriginOffset();
+
+    int coordX = Mathf.RoundToInt((localPosition.x - localGridOffset.x) / Module._moduleSize);
+    int coordY = Mathf.RoundToInt((localGridOffset.y - localPosition.y) / Module._moduleSize);
 
     return new Coord(coordX, coordY);
   }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Placer {
   public static Placer inst;
   bool _lock = false;
@@ -19,6 +20,9 @@ public class Placer {
     _grid = grid;
 
     _parentGo = new GameObject("PlacerParent");
+    _parentGo.transform.SetParent(_grid._parent.transform); // Parent to ship's root
+    _parentGo.transform.localPosition = Vector3.zero; // Local position to match ship root
+    _parentGo.transform.localRotation = Quaternion.identity; // No extra local rotation for highlight parent
 
     _lastHoveredCoord = new Coord(-1, -1);
 
@@ -57,6 +61,8 @@ public class Placer {
 
     Helpers.Log("Placing a mod: {0}", module);
     _currentModule = module;
+    _currentModule.transform.SetParent(_parentGo.transform); // Parent to Placer's parent for sync
+    _currentModule.transform.localRotation = Quaternion.identity; // Module should appear unrotated relative to grid
 
     // Find all valid placements and highlight them
     EnableHighlights();
@@ -80,6 +86,7 @@ public class Placer {
       _currentModule.GetComponentInChildren<TileHighlight>().SetHighlightMode(HighlightMode.None);
       if (_currentModule._cell == null) {
         _currentModule.GetComponent<FloatingModule>().EnableFloat(true);
+        _currentModule.transform.SetParent(null); // Unparent when floating again
       }
       _currentModule = null; // Also clear the current module when stopping placement
     }
@@ -88,6 +95,7 @@ public class Placer {
   public void Hover(Vector2 mousePosition) {
     if (_currentModule != null) {
       Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePosition);
+      mouseWorldPos.z = _grid._parent.transform.position.z; // Align Z with the ship's plane
       Coord currentHoveredCoord = _grid.PositionToCoord(new Vector2(mouseWorldPos.x, mouseWorldPos.y));
 
       // Determine the coordinate where the module is effectively placed
@@ -101,10 +109,12 @@ public class Placer {
         } else { // No valid candidate, place at current hovered coord
           hoverCoord = currentHoveredCoord;
         }
-        _currentModule.transform.position = _grid.CoordToPosition(hoverCoord, Helpers._modZ);
+        _currentModule.transform.position = _grid.CoordToPosition(hoverCoord, Helpers._modZ); // This uses the updated Grid.CoordToPosition
+        _currentModule.transform.localRotation = Quaternion.identity; // Explicitly ensure local rotation is identity
       } else {
         // Completely out of grid bounds, follow raw mouse world position
         _currentModule.transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y, Helpers._modZ);
+        _currentModule.transform.localRotation = Quaternion.identity; // Match ship's local rotation (since _currentModule is parented to _parentGo)
       }
 
       // Handle highlight updates only if the effective placement coordinate has changed
