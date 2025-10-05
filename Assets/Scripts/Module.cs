@@ -76,12 +76,15 @@ public class Module : MonoBehaviour {
 
   [Header("Stats")]
   public int _hp;
-  public bool _shielded;
+  public Module _shieldedBy;
   public bool _powered;
 
   [Header("Type Specific")]
   public ModuleType _type;
   public Weapon _weapon;
+  public Shields _shields;
+  public Battery _battery;
+  public bool _recharging = false;
 
   public bool[] _connects = new bool[4]; // Array to store connections for U, R, D, L
 
@@ -158,6 +161,7 @@ public class Module : MonoBehaviour {
           mod._uiLabel.GetComponent<TMP_Text>().text = "P";
         }
         // TODO: Initialize Energy module specifics
+        mod._battery = mod.gameObject.AddComponent<Battery>();
         break;
       case ModuleType.Weapon:
         mod._hasProtrusion = true;
@@ -178,6 +182,7 @@ public class Module : MonoBehaviour {
         }
         mod._needsPower = true;
         mod._uiPowered.SetActive(true);
+        mod._shields = mod.gameObject.AddComponent<Shields>();
         // TODO: Initialize Shield module specifics
         break;
       case ModuleType.Engine:
@@ -264,8 +269,13 @@ public class Module : MonoBehaviour {
 
   public void SetPower(bool powered) {
     _powered = powered;
-    if (_uiPowered != null) {
-      _uiPowered.SetActive(powered);
+    _uiPowered.SetActive(true); // Ensure the power indicator is active when setting power state
+
+    UIBar poweredBar = _uiPowered.GetComponentInChildren<UIBar>();
+    if (poweredBar != null) {
+      poweredBar.SetFill(powered ? 1.0f : 0.0f);
+    } else {
+      Helpers.Error("UIBar component not found in _uiPowered children.");
     }
   }
 
@@ -302,14 +312,18 @@ public class Module : MonoBehaviour {
   }
 
   public void Damage() {
-    SetHealth(_hp - 1); // Lower hp and update UI
-    if (_hp <= 0) {
-      // Destroy the module's GameObject
-      if (_cell != null) {
-        _cell.Module = null; // Clear the module from the cell
+    if (_shieldedBy != null) {
+      _shieldedBy._shields.TakeHit();
+    } else {
+      SetHealth(_hp - 1); // Lower hp and update UI
+      if (_hp <= 0) {
+        // Destroy the module's GameObject
+        if (_cell != null) {
+          _cell.Module = null; // Clear the module from the cell
+        }
+        Destroy(gameObject);
+        Helpers.Log("Module destroyed!");
       }
-      Destroy(gameObject);
-      Helpers.Log("Module destroyed!");
     }
   }
 
@@ -370,8 +384,14 @@ public class Module : MonoBehaviour {
     SetShowHalo(false);
   }
   
-  public void SetShielded(bool shielded) {
-    _uiShielded.SetActive(shielded);
+  public void SetShielded(Module shieldedBy) {
+    _uiShielded.SetActive(shieldedBy != null);
+    _shieldedBy = shieldedBy;
+  }
+
+  public void SetRecharging(bool recharging) {
+    _recharging = recharging;
+    _cell._grid.UpdateStats();
   }
 
   public string GetTooltip() {
@@ -388,7 +408,7 @@ public class Module : MonoBehaviour {
       case ModuleType.Shield:
         return "Shield (S)\nShields adjacent modules.\nREQUIRES POWER";
       case ModuleType.Engine:
-        return "Engine (E)\nIncreases ship turn speed.\nREQUIRES POWER";
+        return "Engine (E)\nImproves turn speed. Raises rate of random module spawns.\nREQUIRES POWER";
       default:
         return "Unknown Module";
     }

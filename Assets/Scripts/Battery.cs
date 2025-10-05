@@ -1,24 +1,22 @@
 
 using UnityEngine;
 
-public class Shields : MonoBehaviour {
-
-  public int _maxHits = 5;
-  public int _hitsRemaining = 0;
+public class Battery : MonoBehaviour {
+  public int _maxUnits = 10;
+  int _currentUnits = 0;
 
   public float _restoreTime = 5f;
   public Module _module;
 
   void Start() {
     _module = GetComponent<Module>();
-    _hitsRemaining = _maxHits;
-    // SetTimeToNextShot();
+    _currentUnits = _maxUnits;
   }
 
-  public void TakeHit() {
-    _hitsRemaining--;
+  public void UseUnit() {
+    _currentUnits--;
     // XXX TODO: set bar UI
-    if (_hitsRemaining <= 0) {
+    if (_currentUnits <= 0) {
       _module.SetRecharging(true);
       // TODO: regenerate
     }

@@ -1,10 +1,15 @@
 
 Features
 - Add screen ui
-- Add module power system
-- Implement modules
-- Enemy generation + AI
-- Tooltips
+- Implement (more) modules
+- More enemy generation
+- Tweak/change all colors
+- Per module HP max
+- Ships turning
+- Module spawn algo
+- Reuse shot modules
+- Make weapons lower bar and then restore, just like battery/shield
+  - add second color for when bar is restoring?
 
 Bugs
 - placement rules aren't right
@@ -19,3 +24,4 @@ Stretch
 - Module icons
 - Sound effects
 - Music
+- more modules (eg. different weapons)
