@@ -110,8 +110,10 @@ public class Weapon : MonoBehaviour {
         bulletGO.GetComponent<Bullet>()._grid = _module._cell._grid;
 
         Vector3 protrusionVector = GetProtrusionVector(_module._protrusionDir);
+        // Transform the local protrusion vector by the module's world rotation to get the world-space offset direction.
+        Vector3 rotatedProtrusionVector = _module.transform.rotation * protrusionVector;
         // Spawn slightly outside the module, adding a small buffer (0.1f)
-        Vector3 spawnOffset = protrusionVector * (Module._moduleSize / 2f + 0.1f); 
+        Vector3 spawnOffset = rotatedProtrusionVector * (Module._moduleSize / 2f + 0.1f); 
         
         bulletGO.transform.position = _module.transform.position + spawnOffset;
         bulletGO.transform.rotation = GetProtrusionRotation(_module._protrusionDir);

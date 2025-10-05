@@ -137,8 +137,7 @@ public class Module : MonoBehaviour {
     }
 
     // Set HP to 1.0f and disable its UI initially
-    mod._maxHp = 2;
-    mod.SetHealth(2);
+    mod._maxHp = 5;
     mod._uiHpBar.SetActive(false);
     mod._uiGenericBar.SetActive(false);
     mod._uiPowered.SetActive(false);
@@ -197,6 +196,8 @@ public class Module : MonoBehaviour {
         Helpers.Error("Unknown ModuleType: {0}", mod._type);
         break;
     }
+
+    mod.SetHealth(mod._maxHp);
 
     mod.UpdateRotatables(); // Initial connection update
     return mod;
@@ -434,6 +435,17 @@ public class Module : MonoBehaviour {
       GameObject.Destroy(gameObject);
       Helpers.Log("Module was destroyed.");
     }
+  }
+
+  public void SetHp() {
+    bool core = _type == ModuleType.Core;
+    if (_cell._grid._players) {
+      _maxHp = core ? 20 : 5;
+    } else {
+      _maxHp = core ? 5 : 3;
+    }
+
+    SetHealth(_maxHp);
   }
 
   public string GetTooltip() {

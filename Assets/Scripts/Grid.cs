@@ -51,6 +51,7 @@ public class Grid {
         module.transform.SetParent(_parent.transform); // Set parent to grid's parent
         module.transform.position = CoordToPosition(coord, Helpers._modZ); // Use updated CoordToPosition
         module.transform.localRotation = Quaternion.identity; // Align module with grid's local orientation
+        module.SetHp();
 
         UpdateStats();
 
