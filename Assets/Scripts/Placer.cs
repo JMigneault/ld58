@@ -237,22 +237,6 @@ public class Placer {
           closestCand = cursor;
           break;
         }
-/*
-        Module nextModule = _grid.GetModule(next);
-        if (_grid.ValidCoord(next) && nextModule != null) {
-          // Found an existing module in this direction.
-          // The current 'cursor' position is a candidate if it's empty.
-          if (_grid.GetModule(cursor) == null && dist < closestCandDist) {
-            bool canConnect = nextModule._connects[(int)Coord.OppDir(d)];
-
-            if (canConnect) {
-              closestCandDist = dist;
-              closestCand = cursor;
-            }
-          }
-          break; // Stop looking in this direction, found the edge
-        }
-        */
 
         Coord next = cursor.Neighbor(d);
         cursor = next;
