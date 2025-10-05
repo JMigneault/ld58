@@ -8,21 +8,21 @@ public class Battery : MonoBehaviour {
   public int _maxUnits = 10;
   public int _currentUnits = 0;
 
-  public float _restoreTime = 5f;
+  public float _restoreTime = 0.25f;
   private float _timeToNextRestore;
   public Module _module;
 
   void Start() {
     _module = GetComponent<Module>();
-    _currentUnits = _maxUnits;
     _timeToNextRestore = _restoreTime;
-    _module.SetBar(1.0f); // Initial full bar
   }
 
   void Update() {
-    if (_module._powered) {
+    if (_module._cell != null) { // placed
       if (_currentUnits <= 0)
         _module.SetRecharging(true);
+
+      Helpers.Log("Updating placed batter. recharging: {0} cu: {1}", _module._recharging, _currentUnits);
 
       if (_module._recharging && _currentUnits < _maxUnits) {
         _timeToNextRestore -= Time.deltaTime;
@@ -36,24 +36,11 @@ public class Battery : MonoBehaviour {
           }
         }
       }
-    } else {
-      // If not powered, battery is empty and not recharging
-      if (_currentUnits > 0) {
-        _currentUnits = 0;
-      }
-      _module.SetBar(0.0f);
-      if (_module._recharging) {
-        _module.SetRecharging(false);
-      }
     }
   }
 
-  public bool HasUnits(int amount = 1) {
-    return _currentUnits >= amount;
-  }
-
   public void UseUnit(int amount = 1) {
-    if (HasUnits(amount)) {
+    if (_currentUnits >= amount) {
       _currentUnits -= amount;
       _currentUnits = Mathf.Max(0, _currentUnits); // Ensure units don't go below zero
       _module.SetBar(_currentUnits / (1.0f * _maxUnits));

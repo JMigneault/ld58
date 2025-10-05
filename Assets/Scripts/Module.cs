@@ -164,7 +164,6 @@ public class Module : MonoBehaviour {
           mod._uiLabel.GetComponent<TMP_Text>().text = "P";
           mod._uiLabel.GetComponent<TMP_Text>().color = mod._energyLabelColor;
         }
-        // TODO: Initialize Energy module specifics
         mod._battery = mod.gameObject.AddComponent<Battery>();
         break;
       case ModuleType.Weapon:
@@ -174,11 +173,8 @@ public class Module : MonoBehaviour {
           mod._uiLabel.GetComponent<TMP_Text>().text = "G";
         }
         mod._needsPower = true;
-        // TODO XXX FOR TESTING
-        mod._powered = true;
         mod._uiPowered.SetActive(true);
         mod._weapon = mod.gameObject.AddComponent<Weapon>();
-        // TODO: Initialize Weapon module specifics
         break;
       case ModuleType.Shield:
         if (mod._uiLabel != null) {
@@ -188,7 +184,6 @@ public class Module : MonoBehaviour {
         mod._uiPowered.SetActive(true);
         mod._shields = mod.gameObject.AddComponent<Shields>();
         mod._uiLabel.GetComponent<TMP_Text>().color = mod._shieldLabelColor;
-        // TODO: Initialize Shield module specifics
         break;
       case ModuleType.Engine:
         if (mod._uiLabel != null) {

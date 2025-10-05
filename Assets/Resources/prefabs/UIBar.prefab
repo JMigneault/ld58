@@ -268,8 +268,8 @@ MonoBehaviour:
   _leftColor: {r: 0, g: 0.3072339, b: 0.6132076, a: 1}
   _rightColor: {r: 0, g: 0.4988334, b: 0.73, a: 1}
   _highlightColor: {r: 0, g: 0.8833332, b: 1, a: 1}
-  _leftRegenColor: {r: 0.6117647, g: 0.39539427, b: 0, a: 0}
-  _rightRegenColor: {r: 0.7294118, g: 0.28886613, b: 0, a: 0}
-  _regenHighlightColor: {r: 1, g: 0.872434, b: 0, a: 0}
+  _leftRegenColor: {r: 0.6117647, g: 0.39539427, b: 0, a: 1}
+  _rightRegenColor: {r: 0.7294118, g: 0.28886613, b: 0, a: 1}
+  _regenHighlightColor: {r: 1, g: 0.872434, b: 0, a: 1}
   _glowColor: {r: 0, g: 0.0826667, b: 0.248, a: 1}
   _glowWidth: 0.1

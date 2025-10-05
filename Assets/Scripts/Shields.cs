@@ -9,13 +9,12 @@ public class Shields : MonoBehaviour {
   public int _maxHits = 5;
   public int _hitsRemaining = 0;
 
-  public float _restoreTime = 5f;
+  public float _restoreTime = 0.5f;
   private float _timeToNextRestore;
   public Module _module;
 
   void Start() {
     _module = GetComponent<Module>();
-    _hitsRemaining = _maxHits;
     _timeToNextRestore = _restoreTime;
     _module.SetBar(1.0f); // Initial full bar
   }
