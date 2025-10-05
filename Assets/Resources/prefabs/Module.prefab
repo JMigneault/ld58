@@ -2674,6 +2674,9 @@ MonoBehaviour:
   _shieldHaloColor: {r: 0, g: 0.5999999, b: 1, a: 0.29803923}
   _energyLabelColor: {r: 1, g: 0.95686275, b: 0, a: 1}
   _shieldLabelColor: {r: 0, g: 0.6, b: 1, a: 1}
+  _connectorConnectsColor: {r: 0.7807819, g: 0.18444708, b: 0.7882353, a: 1}
+  _connectorDoesntConnectColor: {r: 0.87058824, g: 0.08618827, b: 0.10946796, a: 1}
+  _connectorNormalColor: {r: 0.7671008, g: 0.54107, b: 0.88699996, a: 1}
   _maxHp: 0
   _needsPower: 0
   _hasProtrusion: 0

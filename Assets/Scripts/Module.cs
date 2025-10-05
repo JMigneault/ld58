@@ -70,6 +70,10 @@ public class Module : MonoBehaviour {
   public Color _energyLabelColor;
   public Color _shieldLabelColor;
 
+  public Color _connectorConnectsColor;
+  public Color _connectorDoesntConnectColor;
+  public Color _connectorNormalColor;
+
   [Header("Attributes")]
   public int _maxHp;
   public bool _needsPower;
@@ -200,6 +204,12 @@ public class Module : MonoBehaviour {
     mod.SetHealth(mod._maxHp);
 
     mod.UpdateRotatables(); // Initial connection update
+
+    // Set all connector colors to normal.
+    foreach (dir d in Enum.GetValues(typeof(dir))) {
+      mod.SetConnectorColor(d, true, false);
+    }
+
     return mod;
   }
 
@@ -475,6 +485,34 @@ public class Module : MonoBehaviour {
         return "Unknown Module";
     }
 
+  }
+
+  public void SetConnectorColor(dir d, bool normal, bool connects) {
+    Color targetColor;
+    if (normal) {
+      targetColor = _connectorNormalColor;
+    } else if (connects) {
+      targetColor = _connectorConnectsColor;
+    } else {
+      targetColor = _connectorDoesntConnectColor;
+    }
+
+    GameObject innerConnector = _uiConnectorsInner[(int)d];
+    GameObject outerConnector = _uiConnectorsOuter[(int)d];
+
+    if (innerConnector != null) {
+      Renderer innerRenderer = innerConnector.GetComponent<Renderer>();
+      if (innerRenderer != null && innerRenderer.material != null) {
+        innerRenderer.material.SetColor("_Color", targetColor);
+      }
+    }
+
+    if (outerConnector != null) {
+      Renderer outerRenderer = outerConnector.GetComponent<Renderer>();
+      if (outerRenderer != null && outerRenderer.material != null) {
+        outerRenderer.material.SetColor("_Color", targetColor);
+      }
+    }
   }
 
 }

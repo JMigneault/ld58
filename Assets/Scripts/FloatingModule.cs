@@ -60,6 +60,11 @@ public class FloatingModule : MonoBehaviour {
   public void StartFloating() {
     StopFloatingAnimation(); // Ensure no previous tweens are running
 
+    // Set module connector highlight to normal.
+    foreach (dir d in System.Enum.GetValues(typeof(dir))) {
+      _module.SetConnectorColor(d, true, false);
+    }
+
     transform.parent = null;
 
     if (_slotIdx == -1) {

@@ -227,4 +227,100 @@ public class Grid {
     }
   }
 
+  public void ConnectorHighlights() {
+    var allDirs = new Coord(-1, -1).allDirs;
+    for (int x = 0; x < _dimX; x++) {
+      for (int y = 0; y < _dimY; y++) {
+        Module module = _cells[x, y].Module;
+        if (module != null) {
+          foreach (dir d in allDirs) {
+            module.SetConnectorColor(d, true, false); // Set to normal, not connected
+          }
+        }
+      }
+    }
+  }
+
+  public void HighlightConnectorsForHover(Module hovering, Coord hoverCoord) {
+    if (hovering == null) {
+      ConnectorHighlights();
+      return;
+    }
+
+    var allDirs = new Coord(-1, -1).allDirs;
+    // 1. Reset all connectors on currently placed modules to 'does not connect'.
+    for (int x = 0; x < _dimX; x++) {
+      for (int y = 0; y < _dimY; y++) {
+        Module module = _cells[x, y].Module;
+        if (module != null) {
+          foreach (dir d in allDirs) {
+            module.SetConnectorColor(d, false, false); // Default to 'does not connect'
+          }
+        }
+      }
+    }
+
+    // 2. Reset all connectors on the hovering module to 'does not connect'.
+    if (hovering != null) {
+      foreach (dir d in allDirs) {
+        hovering.SetConnectorColor(d, false, false);
+      }
+    }
+
+    // 3. Check for connections between the hovering module and placed modules.
+    // If a connection is found, mark both sides as 'connects'.
+    if (hovering != null && ValidCoord(hoverCoord)) {
+      foreach (dir d in allDirs) {
+        // If the hovering module does not have a connector in this direction, skip.
+        // Its color is already set to 'does not connect'.
+        if (!hovering._connects[(int)d]) {
+          continue;
+        }
+
+        Coord neighborCoord = hoverCoord.Neighbor(d);
+
+        if (ValidCoord(neighborCoord)) {
+          Module neighborModule = GetModule(neighborCoord);
+
+          if (neighborModule != null) {
+            // If the neighbor module also has a connector in the opposite direction, they connect.
+            if (neighborModule._connects[(int)Coord.OppDir(d)]) {
+              hovering.SetConnectorColor(d, false, true);
+              neighborModule.SetConnectorColor(Coord.OppDir(d), false, true);
+            }
+          }
+        }
+      }
+    }
+
+    // 4. Check for connections between already placed modules.
+    for (int x = 0; x < _dimX; x++) {
+      for (int y = 0; y < _dimY; y++) {
+        Module currentModule = _cells[x, y].Module;
+
+        if (currentModule != null) {
+          foreach (dir d in allDirs) {
+            // If the current module does not have a connector in this direction, skip.
+            if (!currentModule._connects[(int)d]) {
+              continue;
+            }
+
+            Coord neighborCoord = currentModule._cell._coord.Neighbor(d);
+
+            if (ValidCoord(neighborCoord)) {
+              Module neighborModule = GetModule(neighborCoord);
+
+              // Ensure the neighbor module is not the hovering module (it's already handled)
+              // and that it's a placed module, and it has a connector in the opposite direction.
+              if (neighborModule != null && neighborModule != hovering && neighborModule._connects[(int)Coord.OppDir(d)]) {
+                currentModule.SetConnectorColor(d, false, true);
+                neighborModule.SetConnectorColor(Coord.OppDir(d), false, true);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
 }

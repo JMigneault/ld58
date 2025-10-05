@@ -149,6 +149,9 @@ public class Placer {
       }
       _lastHoveredCoord = new Coord(-1, -1);
     }
+
+    _grid.HighlightConnectorsForHover(_currentModule, _lastHoveredCoord);
+
   }
 
   public static bool CanPlaceModule(Module mod, Grid grid, Coord coord) {
