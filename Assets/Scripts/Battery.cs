@@ -21,7 +21,9 @@ public class Battery : MonoBehaviour {
 
   void Update() {
     if (_module._powered) {
-      // Only recharge if the module is marked as recharging
+      if (_currentUnits <= 0)
+        _module.SetRecharging(true);
+
       if (_module._recharging && _currentUnits < _maxUnits) {
         _timeToNextRestore -= Time.deltaTime;
         if (_timeToNextRestore <= 0) {

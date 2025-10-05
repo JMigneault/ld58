@@ -22,6 +22,8 @@ public class Shields : MonoBehaviour {
 
   void Update() {
     if (_module._powered) {
+      if (_hitsRemaining <= 0)
+        _module.SetRecharging(true);
       // Only recharge if the module is marked as recharging
       if (_module._recharging && _hitsRemaining < _maxHits) {
         _timeToNextRestore -= Time.deltaTime;

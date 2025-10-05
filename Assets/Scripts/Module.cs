@@ -78,6 +78,7 @@ public class Module : MonoBehaviour {
 
   [Header("Stats")]
   public int _hp;
+  public Module _poweredBy;
   public Module _shieldedBy;
   public bool _powered;
 
