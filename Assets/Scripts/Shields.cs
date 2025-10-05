@@ -50,13 +50,22 @@ public class Shields : MonoBehaviour {
 
   public void TakeHit() {
     if (_hitsRemaining > 0) {
-      _hitsRemaining--;
-      _hitsRemaining = Mathf.Max(0, _hitsRemaining); // Ensure hits don't go below zero
-      _module.SetBar(_hitsRemaining / (1.0f * _maxHits));
-      if (_hitsRemaining == 0) {
-        _module.SetRecharging(true);
+      if (_module._poweredBy != null) {
+        _module._poweredBy._battery.UseUnit(); // Consume unit from battery
+        _hitsRemaining--;
+        _hitsRemaining = Mathf.Max(0, _hitsRemaining); // Ensure hits don't go below zero
+        _module.SetBar(_hitsRemaining / (1.0f * _maxHits));
+        if (_hitsRemaining == 0) {
+          _module.SetRecharging(true);
+        }
+        _timeToNextRestore = _restoreTime; // Reset timer upon taking a hit
+      } else {
+        Helpers.Log("Shield cannot absorb hit: Not powered by a battery or battery depleted.");
+        _module.SetRecharging(true); // Force recharging if unpowered by battery or battery component missing/depleted
       }
-      _timeToNextRestore = _restoreTime; // Reset timer upon taking a hit
+    } else {
+      Helpers.Log("Shield cannot absorb hit: No hits remaining.");
+      _module.SetRecharging(true); // Force recharging if no hits left
     }
   }
 }

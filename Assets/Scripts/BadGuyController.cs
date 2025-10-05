@@ -75,9 +75,12 @@ public class BadGuyController {
     Module gun = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, new bool[] {true,true,true,false}, dir.L));
     ship.AddModule(gun, cc.Neighbor(dir.L));
 
+    // Add some connection modules around the core
+    Module power = Module.MakeModule(new ModuleSpec(ModuleType.Energy, new bool[] {true,true,true,true}));
+    ship.AddModule(power, cc.Neighbor(dir.U));
+
     var connSpec = new ModuleSpec(ModuleType.Connection);
     ship.AddModule(Module.MakeModule(connSpec), new Coord(0, 0));
-    ship.AddModule(Module.MakeModule(connSpec), new Coord(1, 0));
     ship.AddModule(Module.MakeModule(connSpec), new Coord(0, 2));
     ship.AddModule(Module.MakeModule(connSpec), new Coord(1, 2));
 
