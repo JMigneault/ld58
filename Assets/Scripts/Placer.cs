@@ -224,6 +224,7 @@ public class Placer {
         }
         return success;
       }
+
     }
     // No valid placement candidate found, or AddModule failed.
     return false;

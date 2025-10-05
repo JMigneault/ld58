@@ -264,7 +264,7 @@ MonoBehaviour:
   _bgWidth: 0.8
   _barHeight: 0.1
   _barWidth: 0.8
-  _bgColor: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 1}
+  _bgColor: {r: 0.63529414, g: 0.5058824, b: 0.6099288, a: 1}
   _leftColor: {r: 0, g: 0.3072339, b: 0.6132076, a: 1}
   _rightColor: {r: 0, g: 0.4988334, b: 0.73, a: 1}
   _highlightColor: {r: 0, g: 0.8833332, b: 1, a: 1}
