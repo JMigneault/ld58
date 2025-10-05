@@ -415,7 +415,7 @@ public class Module : MonoBehaviour {
       _cell = null; // Clear the cell reference in the module
     }
 
-    if (!players && UnityEngine.Random.value < 0.5f) {
+    if (!players && _type != ModuleType.Core && UnityEngine.Random.value < 0.5f) {
       // 50% chance for this module to start floating
       FloatingModule floatingModule = GetComponent<FloatingModule>();
       if (floatingModule != null) {

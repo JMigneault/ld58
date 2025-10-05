@@ -35,13 +35,17 @@ public class Weapon : MonoBehaviour {
   }
 
   private Quaternion GetProtrusionRotation(dir d) {
+    // Determine the local rotation for the protrusion direction
+    Quaternion localRotation;
     switch (d) {
-      case dir.U: return Quaternion.Euler(0, 0, 0);   // Up
-      case dir.R: return Quaternion.Euler(0, 0, -90);  // Right (90 degrees clockwise)
-      case dir.D: return Quaternion.Euler(0, 0, -180); // Down (180 degrees clockwise)
-      case dir.L: return Quaternion.Euler(0, 0, 90);   // Left (90 degrees counter-clockwise)
-      default: return Quaternion.identity;
+      case dir.U: localRotation = Quaternion.Euler(0, 0, 0); break;   // Up
+      case dir.R: localRotation = Quaternion.Euler(0, 0, -90); break;  // Right (90 degrees clockwise)
+      case dir.D: localRotation = Quaternion.Euler(0, 0, -180); break; // Down (180 degrees clockwise)
+      case dir.L: localRotation = Quaternion.Euler(0, 0, 90); break;   // Left (90 degrees counter-clockwise)
+      default: localRotation = Quaternion.identity; break;
     }
+    // Combine with the module's current world rotation
+    return _module.transform.rotation * localRotation;
   }
 
   void Update() {
