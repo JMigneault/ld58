@@ -3,8 +3,8 @@ using DG.Tweening;
 
 public class ShipTurner : MonoBehaviour {
   [Header("Rotation Settings")]
-  [SerializeField] private float _rotationAccelerationTime = 0.5f; // Time to reach max speed
-  [SerializeField] private float _rotationDecelerationTime = 0.3f; // Time to stop rotation
+  [SerializeField] private float _rotationAccelerationTime = 0.25f; // Time to reach max speed
+  [SerializeField] private float _rotationDecelerationTime = 1.0f; // Time to stop rotation
 
   private float _currentRotationVelocity = 0f; // Current rotation velocity in degrees per second
   private float _lastTargetVelocity = 0f; // Last target velocity applied to the tween

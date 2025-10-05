@@ -7,8 +7,8 @@ using System.Collections.Generic; // Added for List
 
 public enum EnemyShipType {
   Peon,    // 1x3, Difficulty 1
-  Scout,   // 2x3, Difficulty 3
-  Fighter, // 3x3, Difficulty 5
+  Scout,   // 2x2, Difficulty 3
+  Fighter, // 2x3, Difficulty 5
   Gunship  // 3x3, Difficulty 10
 }
 
@@ -145,8 +145,6 @@ public class BadGuyController : MonoBehaviour {
       return;
     }
 
-    Helpers.Log("JUST CHOSE available slot: {0}", chosenSlot);
-
     shipToSpawn._slot = chosenSlot;
 
     // Create a new GameObject to serve as the root for the enemy ship.
@@ -180,10 +178,6 @@ public class BadGuyController : MonoBehaviour {
                  .SetEase(Ease.OutBack) // Use an easing function for a nice effect
                  .SetLink(enemyShipRoot); // Link to GameObject for automatic killing
 
-    // Set initial rotation based on facing direction, then tween to look at player
-    // TODO: XXX
-    // enemyShipRoot.transform.rotation = Quaternion.Euler(0, 0, (int)shipToSpawn._facing * 90f); // Default rotation (U=0, R=-90, D=-180, L=90)
-
     Helpers.Log("BadGuyController: Spawned {0} ship (difficulty {1}) in slot {2} at {3}", shipToSpawn._type, shipToSpawn._difficulty, chosenSlot, targetPosition);
   }
 
@@ -193,16 +187,16 @@ public class BadGuyController : MonoBehaviour {
 
     // Consider ships from hardest to easiest that fit the needed difficulty
     if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Gunship)) { // Gunship
-      return new ShipSpec(EnemyShipType.Gunship, 4, 4, SpawnSlot.None, dir.D); // Dummy slot, facing
+      return new ShipSpec(EnemyShipType.Gunship, 3, 3, SpawnSlot.None, dir.L); // Dummy slot, facing
     }
     if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Fighter)) { // Fighter
-      return new ShipSpec(EnemyShipType.Fighter, 3, 3, SpawnSlot.None, dir.D);
+      return new ShipSpec(EnemyShipType.Fighter, 2, 3, SpawnSlot.None, dir.L);
     }
     if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Scout)) { // Scout
-      return new ShipSpec(EnemyShipType.Scout, 2, 3, SpawnSlot.None, dir.D);
+      return new ShipSpec(EnemyShipType.Scout, 2, 2, SpawnSlot.None, dir.L);
     }
     if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Peon)) { // Peon
-      return new ShipSpec(EnemyShipType.Peon, 1, 2, SpawnSlot.None, dir.D);
+      return new ShipSpec(EnemyShipType.Peon, 1, 3, SpawnSlot.None, dir.L);
     }
     return null; // No suitable ship to spawn
   }
@@ -237,7 +231,7 @@ public class BadGuyController : MonoBehaviour {
     }
   }
 
-  // 1x2 ship. Very basic.
+  // 1x3 ship. Very basic.
   Grid GeneratePeon(GameObject go, ShipSpec spec) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
     Grid ship = new Grid(spec._dimX, spec._dimY, go);
@@ -246,8 +240,11 @@ public class BadGuyController : MonoBehaviour {
     Coord cc = new Coord(0, 0); // Core at (0,0)
     ship.AddModule(coreModule, cc);
 
-    Module weaponModule = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.D)); // Protrusion down
-    ship.AddModule(weaponModule, cc.Neighbor(dir.D)); // Weapon below core
+    Module energy = Module.MakeModule(new ModuleSpec(ModuleType.Energy));
+    ship.AddModule(energy, cc.Neighbor(dir.D));
+
+    Module weaponModule = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L));
+    ship.AddModule(weaponModule, cc.Neighbor(dir.D).Neighbor(dir.D)); // Weapon below core
 
     Helpers.Log("BadGuyController: Generated a Peon ship.");
     return ship;
@@ -273,8 +270,6 @@ public class BadGuyController : MonoBehaviour {
     ship.AddModule(power, cc.Neighbor(dir.U));
 
     ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 0));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 2));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(1, 2));
 
     Helpers.Log("BadGuyController: Generated a scout ship.");
 

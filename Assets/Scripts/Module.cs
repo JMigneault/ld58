@@ -396,7 +396,7 @@ public class Module : MonoBehaviour {
 
   public void SetRecharging(bool recharging) {
     _recharging = recharging;
-    if (_cell._grid != null) {
+    if (_cell != null && _cell._grid != null) {
       _cell._grid.UpdateStats();
     }
 
