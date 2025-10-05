@@ -436,8 +436,8 @@ public class Module : MonoBehaviour {
       _cell = null; // Clear the cell reference in the module
     }
 
-    if (!players && _type != ModuleType.Core && UnityEngine.Random.value < 0.5f) {
-      // 50% chance for this module to start floating
+    if (!players && _type != ModuleType.Core && UnityEngine.Random.value < 0.3f) {
+      // 30% chance for this module to start floating
       FloatingModule floatingModule = GetComponent<FloatingModule>();
       if (floatingModule != null) {
         SetPower(null);
@@ -466,7 +466,7 @@ public class Module : MonoBehaviour {
     if (_cell._grid._players) {
       _maxHp = core ? 20 : 3;
     } else {
-      _maxHp = core ? 5 : 3;
+      _maxHp = 3;
     }
 
     SetHealth(_maxHp);

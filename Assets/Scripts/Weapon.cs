@@ -58,6 +58,14 @@ public class Weapon : MonoBehaviour {
       }
 
       if (_module._recharging) {
+
+        // massage the balance in the players favor
+        if (_module._cell._grid._players) {
+          _maxShots = 5;
+        } else {
+          _maxShots = 2;
+        }
+
         if (_shotsRemaining < _maxShots) {
           _timeToNextRestore -= Time.deltaTime;
           if (_timeToNextRestore <= 0) {

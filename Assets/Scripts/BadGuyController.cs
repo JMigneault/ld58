@@ -7,9 +7,9 @@ using System.Collections.Generic; // Added for List
 
 public enum EnemyShipType {
   Peon,    // 1x3, Difficulty 1
-  Scout,   // 2x2, Difficulty 3
+  Scout,   // 2x2, Difficulty 2
   Fighter, // 2x3, Difficulty 5
-  Gunship  // 3x3, Difficulty 10
+  Gunship  // 3x3, Difficulty 8
 }
 
 public enum SpawnSlot {
@@ -31,13 +31,13 @@ public class ShipSpec {
   public static int TTD(EnemyShipType t) {
     switch (t) {
       case EnemyShipType.Peon:
-        return 2;
+        return 1;
       case EnemyShipType.Scout:
-        return 4;
+        return 2;
       case EnemyShipType.Fighter:
-        return 7;
+        return 5;
       case EnemyShipType.Gunship:
-        return 10;
+        return 8;
       default:
         Helpers.Error("Unknown EnemyShipType: " + t);
         return 0; // Should not happen
@@ -59,10 +59,10 @@ public class BadGuyController : MonoBehaviour {
 
   public float _targetDifficulty = 2f; // start with a peon
   public float _currentSpawnedDifficulty = 0f;
-  public float _difficultyIncreaseRate = 0.0f; // Difficulty points per second
+  public float _difficultyIncreaseRate = 0.05f; // Difficulty points per second
   public float _difficultyAcceleration = 0.001f; // How fast _difficultyIncreaseRate increases per second
 
-  public float _spawnInterval = 5.0f; // Time between potential spawns
+  public float _spawnInterval = 12f; // Time between potential spawns
   public float _timeToNextSpawn = 0f;
 
   private SpawnSlot[] _slotOccupancy = new SpawnSlot[4]; // Stores the type of ship in the slot, or None if empty

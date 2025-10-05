@@ -4,7 +4,7 @@ using System.Collections.Generic;
 class FloatingModuleTracker {
   public static FloatingModuleTracker inst;
   int _numSlots = 9;
-  FloatingModule[] _slots; // stores references to the FloatingModule in each slot
+  public FloatingModule[] _slots; // stores references to the FloatingModule in each slot
 
   // Grid layout parameters for 3x3 slots
   private float _slotSpacing = 2f; // Distance between centers of adjacent slots

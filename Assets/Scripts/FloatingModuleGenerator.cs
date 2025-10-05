@@ -32,13 +32,16 @@ public class FloatingModuleGenerator {
     }
 
     // Include floating modules in your count too.
-    FloatingModule[] floatingModules = GameObject.FindObjectsOfType<FloatingModule>();
-    foreach (FloatingModule floatingMod in floatingModules) {
-      Module module = floatingMod.GetComponent<Module>();
-      if (module != null) {
-        if (module._type == ModuleType.Energy) energyCount++;
-        else if (module._type == ModuleType.Weapon) weaponCount++;
-        else if (module._type == ModuleType.Shield) shieldCount++;
+
+    for (int i = 0; i < 9; i++) {
+      var floatingMod = FloatingModuleTracker.inst._slots[i];
+      if (floatingMod != null) {
+        Module module = floatingMod.GetComponent<Module>();
+        if (module != null) {
+          if (module._type == ModuleType.Energy) energyCount++;
+          else if (module._type == ModuleType.Weapon) weaponCount++;
+          else if (module._type == ModuleType.Shield) shieldCount++;
+        }
       }
     }
 

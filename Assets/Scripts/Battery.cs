@@ -28,6 +28,14 @@ public class Battery : MonoBehaviour {
       Helpers.Log("Updating placed batter. recharging: {0} cu: {1}", _module._recharging, _currentUnits);
 
       if (_module._recharging && _currentUnits < _maxUnits) {
+
+        // massage the balance in the players favor
+        if (_module._cell._grid._players) {
+          _maxUnits = 10;
+        } else {
+          _maxUnits = 5;
+        }
+
         _timeToNextRestore -= Time.deltaTime;
         if (_timeToNextRestore <= 0) {
           _currentUnits++;
