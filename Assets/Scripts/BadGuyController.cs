@@ -31,11 +31,11 @@ public class ShipSpec {
   public static int TTD(EnemyShipType t) {
     switch (t) {
       case EnemyShipType.Peon:
-        return 1;
+        return 2;
       case EnemyShipType.Scout:
-        return 3;
+        return 4;
       case EnemyShipType.Fighter:
-        return 5;
+        return 7;
       case EnemyShipType.Gunship:
         return 10;
       default:
@@ -54,25 +54,24 @@ public class ShipSpec {
   }
 }
 
-public class BadGuyController {
+public class BadGuyController : MonoBehaviour {
   public static BadGuyController inst;
 
-  private float _targetDifficulty = 0f;
-  private float _currentSpawnedDifficulty = 0f;
-  private float _difficultyIncreaseRate = 0.5f; // Difficulty points per second
-  private float _difficultyAcceleration = 0.01f; // How fast _difficultyIncreaseRate increases per second
+  public float _targetDifficulty = 2f; // start with a peon
+  public float _currentSpawnedDifficulty = 0f;
+  public float _difficultyIncreaseRate = 0.0f; // Difficulty points per second
+  public float _difficultyAcceleration = 0.001f; // How fast _difficultyIncreaseRate increases per second
 
-  private float _spawnInterval = 5.0f; // Time between potential spawns
-  private float _timeToNextSpawn = 0f;
-  private float _lastSpawnTriggerTime = 0f;
+  public float _spawnInterval = 5.0f; // Time between potential spawns
+  public float _timeToNextSpawn = 0f;
+  public float _lastSpawnTriggerTime = 0f;
 
   private SpawnSlot[] _slotOccupancy = new SpawnSlot[4]; // Stores the type of ship in the slot, or None if empty
   private Vector3[] _spawnPositions = new Vector3[4];
   private System.Collections.Generic.List<Grid> _badGuys = new System.Collections.Generic.List<Grid>();
 
-  public BadGuyController() {
+  void Awake() {
     inst = this;
-    _timeToNextSpawn = _spawnInterval; // First spawn attempt after interval
 
     // Initialize slot occupancy to None
     for (int i = 0; i < _slotOccupancy.Length; i++) {
@@ -82,10 +81,10 @@ public class BadGuyController {
     // Define fixed spawn positions for 4 slots
     // (top left, top right, bot left, bot right) relative to the player ship's area
     // These are world positions
-    _spawnPositions[(int)SpawnSlot.TopLeft] = new Vector3(-6.5f, 5.0f, 0); // Example values
-    _spawnPositions[(int)SpawnSlot.TopRight] = new Vector3(6.5f, 5.0f, 0);
-    _spawnPositions[(int)SpawnSlot.BottomLeft] = new Vector3(-6.5f, -5.0f, 0);
-    _spawnPositions[(int)SpawnSlot.BottomRight] = new Vector3(6.5f, -5.0f, 0);
+    _spawnPositions[(int)SpawnSlot.TopLeft] = new Vector3(-5.5f, 3.0f, 0); // Example values
+    _spawnPositions[(int)SpawnSlot.TopRight] = new Vector3(5.5f, 3.0f, 0);
+    _spawnPositions[(int)SpawnSlot.BottomLeft] = new Vector3(-5.5f, -3.0f, 0);
+    _spawnPositions[(int)SpawnSlot.BottomRight] = new Vector3(5.5f, -3.0f, 0);
   }
 
   // Called from a MonoBehaviour's Update or similar
@@ -97,6 +96,7 @@ public class BadGuyController {
     _timeToNextSpawn -= Time.deltaTime;
 
     if (_timeToNextSpawn <= 0) {
+      Helpers.Log("SPAWNING");
       AttemptSpawn();
       _timeToNextSpawn = _spawnInterval; // Reset timer for next attempt
       _lastSpawnTriggerTime = Time.time;
@@ -106,10 +106,12 @@ public class BadGuyController {
   private void AttemptSpawn() {
     // Don't spawn if all slots are full
     bool allSlotsFull = true;
+    bool allSlotsEmpty = true;
     for (int i = 0; i < _slotOccupancy.Length; i++) {
       if (_slotOccupancy[i] == SpawnSlot.None) {
         allSlotsFull = false;
-        break;
+      } else {
+        allSlotsEmpty = false;
       }
     }
     if (allSlotsFull) {
@@ -119,6 +121,9 @@ public class BadGuyController {
 
     // Calculate how much difficulty we need to make up
     float neededDifficulty = _targetDifficulty - _currentSpawnedDifficulty;
+
+    if (allSlotsEmpty && neededDifficulty < 2f) // if there are no enemies, we need to at least spawn a peon
+      neededDifficulty = 2;
 
     if (neededDifficulty <= 0) {
       Helpers.Log("BadGuyController: Target difficulty met. Skipping spawn attempt.");
@@ -139,6 +144,8 @@ public class BadGuyController {
       Helpers.Log("BadGuyController: No available spawn slots found.");
       return;
     }
+
+    Helpers.Log("JUST CHOSE available slot: {0}", chosenSlot);
 
     shipToSpawn._slot = chosenSlot;
 
@@ -336,8 +343,8 @@ public class BadGuyController {
     // Free its slot.
     for (int i = 0; i < _slotOccupancy.Length; i++) {
         if (_slotOccupancy[i] != SpawnSlot.None) {
-            _slotOccupancy[i] = SpawnSlot.None;
-            break;
+          _slotOccupancy[i] = SpawnSlot.None;
+          break;
         }
     }
   }

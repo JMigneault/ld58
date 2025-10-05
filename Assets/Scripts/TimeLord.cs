@@ -2,16 +2,20 @@ using UnityEngine;
 using DG.Tweening; // Import DOTween
 
 public class TimeLord : MonoBehaviour {
+  public static TimeLord inst;
+
+  public bool _started = false;
 
   public float _timeToNextFloater;
-  public float _timeToNextEnemy;
 
   void Start() {
+    inst = this;
     SetTimeToNextFloater();
-    SetTimeToNextEnemy();
   }
 
   void Update() {
+    if (!_started) return;
+
     _timeToNextFloater -= Time.deltaTime;
     if (_timeToNextFloater < 0) {
       FloatingModuleGenerator.inst.GenerateFloater();
@@ -24,10 +28,6 @@ public class TimeLord : MonoBehaviour {
 
   void SetTimeToNextFloater() {
     _timeToNextFloater = Random.value * 5f + 15f; // 5-15
-  }
-
-  void SetTimeToNextEnemy() {
-    _timeToNextEnemy = 5f; // Random.value * 15f + 15f; // Example: 15-30 secs for enemies
   }
 
 }

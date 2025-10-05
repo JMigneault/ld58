@@ -6,6 +6,8 @@ using System;
 public class Grid {
   public bool _players;
 
+  int _modsAdded = 0;
+
   public static Grid _playersGrid;
   public GameObject _parent;
 
@@ -40,6 +42,10 @@ public class Grid {
   }
 
   public bool AddModule(Module module, Coord coord) {
+
+    if (++_modsAdded == 4) // HACK: don't start time based actions until the player has put down their three initial modules
+      TimeLord.inst._started = true;
+
     // Check if coord is within bounds
     if (ValidCoord(coord)) {
       Cell targetCell = _cells[coord.x, coord.y];

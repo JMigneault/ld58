@@ -34,7 +34,7 @@ public class Init {
     fmg.GenerateFloater();
     fmg.GenerateFloater();
 
-    var bgc = new BadGuyController();
+    var bgc = _globalScripts.AddComponent<BadGuyController>();
   }
 
 }

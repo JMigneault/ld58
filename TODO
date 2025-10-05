@@ -4,9 +4,12 @@ Features
 - Tweak/change all colors
 - Polish module UI.
 - Floating modules can overlap
+- Gun auto aim
+- Make different strength guns (1, 2, 3?)
 
 Bugs
 - hovering a tile over an existing one is pretty glitchy
+- tween warnings
 
 Juice
 

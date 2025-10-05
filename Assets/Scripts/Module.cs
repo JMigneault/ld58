@@ -396,7 +396,9 @@ public class Module : MonoBehaviour {
 
   public void SetRecharging(bool recharging) {
     _recharging = recharging;
-    _cell._grid.UpdateStats();
+    if (_cell._grid != null) {
+      _cell._grid.UpdateStats();
+    }
 
     if (_uiGenericBar != null) {
       UIBar genericBar = _uiGenericBar.GetComponentInChildren<UIBar>();
