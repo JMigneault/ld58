@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class UIBar : MonoBehaviour
-{
+public enum BarMode {
+  Normal,
+  Regen
+}
+
+public class UIBar : MonoBehaviour {
   public float _fill = 0.0f;
+  public BarMode _barMode = BarMode.Normal; // Default to normal mode
 
   public float _bgHeight;
   public float _bgWidth;
@@ -16,6 +21,11 @@ public class UIBar : MonoBehaviour
   public Color _leftColor;
   public Color _rightColor;
   public Color _highlightColor;
+
+  public Color _leftRegenColor;
+  public Color _rightRegenColor;
+  public Color _regenHighlightColor; // Corrected duplicate field
+
   public Color _glowColor;
   public float _glowWidth = 0.1f;
 
@@ -55,13 +65,32 @@ public class UIBar : MonoBehaviour
       backgroundRenderer.material.SetColor("_GlowColor", _glowColor);
       backgroundRenderer.material.SetFloat("_GlowWidth", _glowWidth);
 
-      fillRenderer.material.SetColor("_LeftColor", _leftColor);
-      fillRenderer.material.SetColor("_HighlightColor", _highlightColor);
-      fillRenderer.material.SetColor("_RightColor", _rightColor);
+      Color currentLeftColor;
+      Color currentRightColor;
+      Color currentHighlightColor;
+
+      if (_barMode == BarMode.Regen) {
+        currentLeftColor = _leftRegenColor;
+        currentRightColor = _rightRegenColor;
+        currentHighlightColor = _regenHighlightColor;
+      } else {
+        currentLeftColor = _leftColor;
+        currentRightColor = _rightColor;
+        currentHighlightColor = _highlightColor;
+      }
+
+      fillRenderer.material.SetColor("_LeftColor", currentLeftColor);
+      fillRenderer.material.SetColor("_HighlightColor", currentHighlightColor);
+      fillRenderer.material.SetColor("_RightColor", currentRightColor);
 
     } else {
       Helpers.Error("UIBar expects at least two child GameObjects for its visual elements.");
     }
+  }
+
+  public void SetBarMode(BarMode mode) {
+    _barMode = mode;
+    SetMaterialProps(); // Update colors immediately
   }
 
   public void SetFill(float prop) {

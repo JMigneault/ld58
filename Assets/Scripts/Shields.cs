@@ -1,68 +1,61 @@
 
 using UnityEngine;
 
+using UnityEngine;
+using System;
+
 public class Shields : MonoBehaviour {
 
   public int _maxHits = 5;
   public int _hitsRemaining = 0;
 
   public float _restoreTime = 5f;
+  private float _timeToNextRestore;
   public Module _module;
 
   void Start() {
     _module = GetComponent<Module>();
     _hitsRemaining = _maxHits;
-    // SetTimeToNextShot();
-  }
-
-  public void TakeHit() {
-    _hitsRemaining--;
-    // XXX TODO: set bar UI
-    if (_hitsRemaining <= 0) {
-      _module.SetRecharging(true);
-      // TODO: regenerate
-    }
-  }
-
-/*
-
-  private Vector3 GetProtrusionVector(dir d) {
-    switch (d) {
-      case dir.U: return new Vector3(0, 1, 0);
-      case dir.R: return new Vector3(1, 0, 0);
-      case dir.D: return new Vector3(0, -1, 0);
-      case dir.L: return new Vector3(-1, 0, 0);
-      default: return Vector3.zero;
-    }
-  }
-
-  private Quaternion GetProtrusionRotation(dir d) {
-    switch (d) {
-      case dir.U: return Quaternion.Euler(0, 0, 0);   // Up
-      case dir.R: return Quaternion.Euler(0, 0, -90);  // Right (90 degrees clockwise)
-      case dir.D: return Quaternion.Euler(0, 0, -180); // Down (180 degrees clockwise)
-      case dir.L: return Quaternion.Euler(0, 0, 90);   // Left (90 degrees counter-clockwise)
-      default: return Quaternion.identity;
-    }
+    _timeToNextRestore = _restoreTime;
+    _module.SetBar(1.0f); // Initial full bar
   }
 
   void Update() {
-    if (_module._cell != null && _module._powered) { // we're placed
-      _module._uiGenericBar.SetActive(true);
-      _timeToNextShot -= Time.deltaTime;
-      if (_timeToNextShot < 0) {
-        Shoot();
-        SetTimeToNextShot();
+    if (_module._powered) {
+      // Only recharge if the module is marked as recharging
+      if (_module._recharging && _hitsRemaining < _maxHits) {
+        _timeToNextRestore -= Time.deltaTime;
+        if (_timeToNextRestore <= 0) {
+          _hitsRemaining++;
+          _hitsRemaining = Mathf.Min(_hitsRemaining, _maxHits);
+          _timeToNextRestore = _restoreTime; // Reset timer for next hit or full
+          _module.SetBar(_hitsRemaining / (1.0f * _maxHits));
+          if (_hitsRemaining == _maxHits) {
+            _module.SetRecharging(false);
+          }
+        }
       }
-      _module.SetBar((_timePerShot - _timeToNextShot) / _timePerShot);
     } else {
-      _module.SetBar(0f);
+      // If not powered, shields are down and not recharging
+      if (_hitsRemaining > 0) {
+        _hitsRemaining = 0;
+      }
+      _module.SetBar(0.0f);
+      if (_module._recharging) {
+        _module.SetRecharging(false);
+      }
     }
   }
 
-  void SetTimeToNextShot() {
-    _timeToNextShot = _timePerShot;
+  public void TakeHit() {
+    if (_hitsRemaining > 0) {
+      _hitsRemaining--;
+      _hitsRemaining = Mathf.Max(0, _hitsRemaining); // Ensure hits don't go below zero
+      _module.SetBar(_hitsRemaining / (1.0f * _maxHits));
+      if (_hitsRemaining == 0) {
+        _module.SetRecharging(true);
+      }
+      _timeToNextRestore = _restoreTime; // Reset timer upon taking a hit
+    }
   }
-  */
-  
 }

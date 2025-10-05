@@ -1,66 +1,67 @@
 
 using UnityEngine;
 
+using UnityEngine;
+using System;
+
 public class Battery : MonoBehaviour {
   public int _maxUnits = 10;
-  int _currentUnits = 0;
+  public int _currentUnits = 0;
 
   public float _restoreTime = 5f;
+  private float _timeToNextRestore;
   public Module _module;
 
   void Start() {
     _module = GetComponent<Module>();
     _currentUnits = _maxUnits;
-  }
-
-  public void UseUnit() {
-    _currentUnits--;
-    // XXX TODO: set bar UI
-    if (_currentUnits <= 0) {
-      _module.SetRecharging(true);
-      // TODO: regenerate
-    }
-  }
-
-/*
-
-  private Vector3 GetProtrusionVector(dir d) {
-    switch (d) {
-      case dir.U: return new Vector3(0, 1, 0);
-      case dir.R: return new Vector3(1, 0, 0);
-      case dir.D: return new Vector3(0, -1, 0);
-      case dir.L: return new Vector3(-1, 0, 0);
-      default: return Vector3.zero;
-    }
-  }
-
-  private Quaternion GetProtrusionRotation(dir d) {
-    switch (d) {
-      case dir.U: return Quaternion.Euler(0, 0, 0);   // Up
-      case dir.R: return Quaternion.Euler(0, 0, -90);  // Right (90 degrees clockwise)
-      case dir.D: return Quaternion.Euler(0, 0, -180); // Down (180 degrees clockwise)
-      case dir.L: return Quaternion.Euler(0, 0, 90);   // Left (90 degrees counter-clockwise)
-      default: return Quaternion.identity;
-    }
+    _timeToNextRestore = _restoreTime;
+    _module.SetBar(1.0f); // Initial full bar
   }
 
   void Update() {
-    if (_module._cell != null && _module._powered) { // we're placed
-      _module._uiGenericBar.SetActive(true);
-      _timeToNextShot -= Time.deltaTime;
-      if (_timeToNextShot < 0) {
-        Shoot();
-        SetTimeToNextShot();
+    if (_module._powered) {
+      // Only recharge if the module is marked as recharging
+      if (_module._recharging && _currentUnits < _maxUnits) {
+        _timeToNextRestore -= Time.deltaTime;
+        if (_timeToNextRestore <= 0) {
+          _currentUnits++;
+          _currentUnits = Mathf.Min(_currentUnits, _maxUnits);
+          _timeToNextRestore = _restoreTime; // Reset timer for next unit or full
+          _module.SetBar(_currentUnits / (1.0f * _maxUnits));
+          if (_currentUnits == _maxUnits) {
+            _module.SetRecharging(false);
+          }
+        }
       }
-      _module.SetBar((_timePerShot - _timeToNextShot) / _timePerShot);
     } else {
-      _module.SetBar(0f);
+      // If not powered, battery is empty and not recharging
+      if (_currentUnits > 0) {
+        _currentUnits = 0;
+      }
+      _module.SetBar(0.0f);
+      if (_module._recharging) {
+        _module.SetRecharging(false);
+      }
     }
   }
 
-  void SetTimeToNextShot() {
-    _timeToNextShot = _timePerShot;
+  public bool HasUnits(int amount = 1) {
+    return _currentUnits >= amount;
   }
-  */
-  
+
+  public void UseUnit(int amount = 1) {
+    if (HasUnits(amount)) {
+      _currentUnits -= amount;
+      _currentUnits = Mathf.Max(0, _currentUnits); // Ensure units don't go below zero
+      _module.SetBar(_currentUnits / (1.0f * _maxUnits));
+      if (_currentUnits == 0) {
+        _module.SetRecharging(true);
+      }
+      _timeToNextRestore = _restoreTime; // Reset timer upon using a unit
+    } else {
+      Helpers.Log("Attempted to use battery unit when none available.");
+      _module.SetRecharging(true); // Force recharging if tried to use when empty
+    }
+  }
 }

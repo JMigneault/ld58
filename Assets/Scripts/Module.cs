@@ -67,8 +67,8 @@ public class Module : MonoBehaviour {
 
   public Color _powerHaloColor;
   public Color _shieldHaloColor;
-  public Color _energyLabelColor; // AI: Default color for Energy module label
-  public Color _shieldLabelColor; // AI: Default color for Shield module label
+  public Color _energyLabelColor;
+  public Color _shieldLabelColor;
 
   [Header("Attributes")]
   public int _maxHp;
@@ -398,6 +398,15 @@ public class Module : MonoBehaviour {
   public void SetRecharging(bool recharging) {
     _recharging = recharging;
     _cell._grid.UpdateStats();
+
+    if (_uiGenericBar != null) {
+      UIBar genericBar = _uiGenericBar.GetComponentInChildren<UIBar>();
+      if (genericBar != null) {
+        genericBar.SetBarMode(recharging ? BarMode.Regen : BarMode.Normal);
+      } else {
+        Helpers.Error("UIBar component not found in _uiGenericBar children.");
+      }
+    }
   }
 
   public string GetTooltip() {
