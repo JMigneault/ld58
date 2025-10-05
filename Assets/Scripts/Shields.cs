@@ -6,10 +6,10 @@ using System;
 
 public class Shields : MonoBehaviour {
 
-  public int _maxHits = 5;
+  public int _maxHits = 2;
   public int _hitsRemaining = 0;
 
-  public float _restoreTime = 0.5f;
+  public float _restoreTime = 1f;
   private float _timeToNextRestore;
   public Module _module;
 

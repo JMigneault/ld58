@@ -57,16 +57,17 @@ public class FloatingModule : MonoBehaviour {
     }
   }
 
-  private void StartFloating() {
+  public void StartFloating() {
     StopFloatingAnimation(); // Ensure no previous tweens are running
 
     transform.parent = null;
 
     if (_slotIdx == -1) {
-      _slotIdx = FloatingModuleTracker.inst.GrabEmptySlot();
-      Vector2 slotPos2D = FloatingModuleTracker.inst.SlotToPosition(_slotIdx);
-      _slotBasePosition = new Vector3(slotPos2D.x, slotPos2D.y, Helpers._modZ);
+      _slotIdx = FloatingModuleTracker.inst.GrabEmptySlot(this); // Pass 'this' FloatingModule instance
     }
+    // Recalculate _slotBasePosition. This is crucial if _slotIdx changed due to a reshuffle.
+    Vector2 slotPos2D = FloatingModuleTracker.inst.SlotToPosition(_slotIdx);
+    _slotBasePosition = new Vector3(slotPos2D.x, slotPos2D.y, Helpers._modZ);
 
     Sequence sequence = DOTween.Sequence();
 
@@ -100,8 +101,8 @@ public class FloatingModule : MonoBehaviour {
 
   public void ReleaseSlot() {
     if (_slotIdx != -1) {
-      FloatingModuleTracker.inst.ReleaseSlot(_slotIdx);
-      _slotIdx = -1;
+      FloatingModuleTracker.inst.ReleaseSlot(_slotIdx); // Pass current slot index for release
+      _slotIdx = -1; // Clear internal slot index
     }
 
   }

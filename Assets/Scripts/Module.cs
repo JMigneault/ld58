@@ -413,7 +413,9 @@ public class Module : MonoBehaviour {
   public void DestroyModule() {
     bool players = _cell._grid._players;
 
+    Grid grid = null;
     if (_cell != null) {
+      grid = _cell._grid;
       _cell.Module = null; // Clear the module from its cell
       _cell = null; // Clear the cell reference in the module
     }
@@ -437,12 +439,16 @@ public class Module : MonoBehaviour {
       GameObject.Destroy(gameObject);
       Helpers.Log("Module was destroyed.");
     }
+
+    if (grid != null) {
+      grid.UpdateStats();
+    }
   }
 
   public void SetHp() {
     bool core = _type == ModuleType.Core;
     if (_cell._grid._players) {
-      _maxHp = core ? 20 : 5;
+      _maxHp = core ? 20 : 3;
     } else {
       _maxHp = core ? 5 : 3;
     }
