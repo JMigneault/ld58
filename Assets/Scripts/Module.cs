@@ -419,6 +419,8 @@ public class Module : MonoBehaviour {
       // 50% chance for this module to start floating
       FloatingModule floatingModule = GetComponent<FloatingModule>();
       if (floatingModule != null) {
+        SetPower(null);
+        SetShielded(null);
         floatingModule.EnableFloat(true);
         transform.parent = null;
         Helpers.Log("Module is now floating!");

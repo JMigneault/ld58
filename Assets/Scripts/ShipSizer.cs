@@ -28,7 +28,15 @@ public class ShipSizer : MonoBehaviour {
     float propX = x / (1.0f * maxSize);
     float propY = y / (1.0f * maxSize);
 
-    transform.localScale = new Vector3(propX, propY, 1.0f);
+    // Apply scaling to the first two children.
+    var c0s = transform.GetChild(0).localScale;
+    transform.GetChild(0).localScale = new Vector3(c0s.x * propX, c0s.y * propY, 1.0f);
+    var c1s = transform.GetChild(1).localScale;
+    transform.GetChild(1).localScale = new Vector3(c1s.x * propX, c1s.y * propY, 1.0f);
+
+    // Ensure the root object (which is the Grid's parent) remains unscaled for correct grid calculations.
+    // This line effectively resets the root scale to 1, ensuring Module._moduleSize acts as a world unit.
+    transform.localScale = Vector3.one;
   }
   
 

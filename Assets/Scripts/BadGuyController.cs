@@ -25,14 +25,8 @@ public class BadGuyController {
     // This allows us to move and tween the entire ship.
     GameObject enemyShipRoot = GameObject.Instantiate(Helpers.Prefab("Enemy"));
 
-    // Initialize the enemy ship's grid.
-    // Assuming enemy ship dimensions, for now, let's use example dimensions.
-    int enemyDimX = 2;
-    int enemyDimY = 3;
-    Grid enemyGrid = new Grid(enemyDimX, enemyDimY, enemyShipRoot);
-
     // Generate modules for the enemy ship.
-    GenerateAShip(enemyGrid, enemyShipRoot);
+    Grid enemyGrid = GenerateAShip(enemyShipRoot);
 
     _badGuys.Add(enemyGrid);
 
@@ -62,13 +56,15 @@ public class BadGuyController {
     return enemyGrid;
   }
 
-  void GenerateAShip(Grid ship, GameObject go) {
-    GenerateScout(ship, go);
+  Grid GenerateAShip(GameObject go) {
+    return GenerateScout(go);
   }
 
   // 2x3 ship. One gun and connectors.
-  void GenerateScout(Grid ship, GameObject go) {
+  Grid GenerateScout(GameObject go) {
     go.GetComponent<ShipSizer>().Size(2, 3);
+
+    Grid ship = new Grid(2, 3, go);
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
     Coord cc = new Coord(1, 1);
@@ -88,6 +84,8 @@ public class BadGuyController {
     ship.AddModule(Module.MakeModule(connSpec), new Coord(1, 2));
 
     Helpers.Log("BadGuyController: Generated a scout ship.");
+
+    return ship;
   }
 
   public void BadGuyDied(Grid guy) {
