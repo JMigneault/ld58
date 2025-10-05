@@ -68,7 +68,7 @@ public class BadGuyController : MonoBehaviour {
 
   private SpawnSlot[] _slotOccupancy = new SpawnSlot[4]; // Stores the type of ship in the slot, or None if empty
   private Vector3[] _spawnPositions = new Vector3[4];
-  private System.Collections.Generic.List<Grid> _badGuys = new System.Collections.Generic.List<Grid>();
+  public List<Grid> _badGuys = new System.Collections.Generic.List<Grid>();
 
   void Awake() {
     inst = this;
