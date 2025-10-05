@@ -258,32 +258,24 @@ public class BadGuyController : MonoBehaviour {
   }
 
 
-  // 2x3 ship. One gun and connectors.
+  // 2x2 ship. One gun and connectors.
   Grid GenerateScout(GameObject go, ShipSpec spec) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
-
     Grid ship = new Grid(spec._dimX, spec._dimY, go);
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
     Coord cc = new Coord(1, 1);
     ship.AddModule(coreModule, cc);
 
-    // Add some connection modules around the core
-    Module gun = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)); // Protrusion left
-    ship.AddModule(gun, cc.Neighbor(dir.L));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), cc.Neighbor(dir.L)); // Protrusion left
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), cc.Neighbor(dir.L).Neighbor(dir.U)); // Protrusion right
 
-    // Add some connection modules around the core
-    Module power = Module.MakeModule(new ModuleSpec(ModuleType.Energy));
-    ship.AddModule(power, cc.Neighbor(dir.U));
-
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 0));
-
-    Helpers.Log("BadGuyController: Generated a scout ship.");
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), cc.Neighbor(dir.U));
 
     return ship;
   }
 
-  // 3x3 ship. Two guns, shields, and energy.
+  // 2x3 ship. Two guns, shields, and energy.
   Grid GenerateFighter(GameObject go, ShipSpec spec) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
     Grid ship = new Grid(spec._dimX, spec._dimY, go);
@@ -293,47 +285,36 @@ public class BadGuyController : MonoBehaviour {
     ship.AddModule(coreModule, cc);
 
     ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), cc.Neighbor(dir.L)); // Protrusion left
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.R)), cc.Neighbor(dir.R)); // Protrusion right
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), cc.Neighbor(dir.L).Neighbor(dir.D)); // Protrusion right
+
     ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), cc.Neighbor(dir.U));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), cc.Neighbor(dir.U).Neighbor(dir.L));
     ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), cc.Neighbor(dir.D));
 
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 0));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(2, 0));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 2));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(2, 2));
-
-    Helpers.Log("BadGuyController: Generated a Fighter ship.");
     return ship;
   }
 
-  // 4x4 ship. Multiple guns, shields, energy, and engines.
+  // 3x3 ship. Multiple guns, shields, energy, and engines.
   Grid GenerateGunship(GameObject go, ShipSpec spec) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
     Grid ship = new Grid(spec._dimX, spec._dimY, go);
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
-    Coord cc = new Coord(1, 1); // Place core offset for larger ships
+    Coord cc = new Coord(2, 1); // Place core offset for larger ships
     ship.AddModule(coreModule, cc);
 
     // Weapons
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), new Coord(0, 1)); // Protrusion left
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.R)), new Coord(3, 1)); // Protrusion right
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.U)), new Coord(1, 0)); // Protrusion up
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.D)), new Coord(2, 3)); // Protrusion down
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), new Coord(0, 0)); // Protrusion left
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), new Coord(0, 1)); // Protrusion right
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), new Coord(0, 2)); // Protrusion up
 
     // Shields and Energy
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), new Coord(0, 0));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), new Coord(3, 0));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), new Coord(0, 2));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), new Coord(3, 2));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), new Coord(1, 0));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), new Coord(1, 2));
 
-    // Engines
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Engine)), new Coord(1, 3));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Engine)), new Coord(2, 0));
-
-    // Connections
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(1, 2));
-    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(2, 1));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), new Coord(1, 1));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), new Coord(2, 0));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), new Coord(2, 2));
 
     Helpers.Log("BadGuyController: Generated a Gunship.");
     return ship;

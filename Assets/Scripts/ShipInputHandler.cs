@@ -4,7 +4,7 @@ using DG.Tweening;
 public class ShipInputHandler : MonoBehaviour {
   ShipTurner _turner;
 
-  [SerializeField] private float _baseRotationSpeed = 20f; // Max degrees per second
+  [SerializeField] private float _baseRotationSpeed = 25f; // Max degrees per second
   [SerializeField] private float _maxRotationSpeedPerEngine = 10f; // Max degrees per second
 
   void Awake() {

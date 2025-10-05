@@ -61,7 +61,7 @@ public class Weapon : MonoBehaviour {
 
         // massage the balance in the players favor
         if (_module._cell._grid._players) {
-          _maxShots = 5;
+          _maxShots = 4;
           _restoreTime = 0.5f;
         } else {
           _maxShots = 2;

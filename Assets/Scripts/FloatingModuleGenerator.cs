@@ -59,8 +59,7 @@ public class FloatingModuleGenerator {
       if (Random.value < 0.5f) {
         // Generate a truly random module from all types
         ModuleType[] allModuleTypes = new ModuleType[] {
-            ModuleType.Connection, ModuleType.Energy,
-            ModuleType.Weapon, ModuleType.Shield, ModuleType.Engine
+            ModuleType.Engine
         };
         typeToGenerate = allModuleTypes[Random.Range(0, allModuleTypes.Length)];
       } else {
