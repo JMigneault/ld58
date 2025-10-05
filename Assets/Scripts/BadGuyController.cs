@@ -117,10 +117,10 @@ public class BadGuyController : MonoBehaviour {
       GameObject enemyShipRoot = GameObject.Instantiate(Helpers.Prefab("Enemy"));
 
       // Generate modules for the enemy ship.
-      Grid enemyGrid = GenerateAShip(enemyShipRoot, shipToSpawn);
+      Grid enemyGrid = GenerateAShip(enemyShipRoot, shipToSpawn, chosenSlot); // Pass chosenSlot
 
       _badGuys.Add(enemyGrid);
-      _slotOccupancy[(int)chosenSlot] = shipToSpawn._slot; // Mark slot as occupied
+      _slotOccupancy[(int)chosenSlot] = chosenSlot; // Mark slot as occupied with the actual slot value
 
       // Position the enemy ship:
       Vector3 targetPosition = _spawnPositions[(int)chosenSlot];
@@ -222,26 +222,26 @@ public class BadGuyController : MonoBehaviour {
     return true;
   }
 
-  Grid GenerateAShip(GameObject go, ShipSpec spec) {
+  Grid GenerateAShip(GameObject go, ShipSpec spec, SpawnSlot slot) {
     switch (spec._type) {
       case EnemyShipType.Peon:
-        return GeneratePeon(go, spec);
+        return GeneratePeon(go, spec, slot);
       case EnemyShipType.Scout:
-        return GenerateScout(go, spec);
+        return GenerateScout(go, spec, slot);
       case EnemyShipType.Fighter:
-        return GenerateFighter(go, spec);
+        return GenerateFighter(go, spec, slot);
       case EnemyShipType.Gunship:
-        return GenerateGunship(go, spec);
+        return GenerateGunship(go, spec, slot);
       default:
         Helpers.Error("GenerateAShip: Unknown enemy ship type: " + spec._type);
-        return GenerateScout(go, spec); // Fallback to scout
+        return GenerateScout(go, spec, slot); // Fallback to scout
     }
   }
 
   // 1x3 ship. Very basic.
-  Grid GeneratePeon(GameObject go, ShipSpec spec) {
+  Grid GeneratePeon(GameObject go, ShipSpec spec, SpawnSlot slot) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
-    Grid ship = new Grid(spec._dimX, spec._dimY, go);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go, false, slot); // Pass spawnSlot to Grid constructor
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
     Coord cc = new Coord(0, 0); // Core at (0,0)
@@ -259,9 +259,9 @@ public class BadGuyController : MonoBehaviour {
 
 
   // 2x2 ship. One gun and connectors.
-  Grid GenerateScout(GameObject go, ShipSpec spec) {
+  Grid GenerateScout(GameObject go, ShipSpec spec, SpawnSlot slot) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
-    Grid ship = new Grid(spec._dimX, spec._dimY, go);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go, false, slot); // Pass spawnSlot to Grid constructor
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
     Coord cc = new Coord(1, 1);
@@ -276,9 +276,9 @@ public class BadGuyController : MonoBehaviour {
   }
 
   // 2x3 ship. Two guns, shields, and energy.
-  Grid GenerateFighter(GameObject go, ShipSpec spec) {
+  Grid GenerateFighter(GameObject go, ShipSpec spec, SpawnSlot slot) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
-    Grid ship = new Grid(spec._dimX, spec._dimY, go);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go, false, slot); // Pass spawnSlot to Grid constructor
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
     Coord cc = new Coord(1, 1);
@@ -295,9 +295,9 @@ public class BadGuyController : MonoBehaviour {
   }
 
   // 3x3 ship. Multiple guns, shields, energy, and engines.
-  Grid GenerateGunship(GameObject go, ShipSpec spec) {
+  Grid GenerateGunship(GameObject go, ShipSpec spec, SpawnSlot slot) {
     go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
-    Grid ship = new Grid(spec._dimX, spec._dimY, go);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go, false, slot); // Pass spawnSlot to Grid constructor
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
     Coord cc = new Coord(2, 1); // Place core offset for larger ships
@@ -323,16 +323,11 @@ public class BadGuyController : MonoBehaviour {
   public void BadGuyDied(Grid guy) {
     _badGuys.Remove(guy);
 
-    // Find and free its slot.
-    // NOTE: This currently frees the *first* occupied slot found.
-    // If specific enemy -> slot mapping is desired, _slotOccupancy needs to store
-    // references to the actual Grid objects or their unique identifiers.
-    int freedSlotIdx = -1;
-    for (int i = 0; i < _slotOccupancy.Length; i++) {
-      if (_slotOccupancy[i] != SpawnSlot.None) {
-        _slotOccupancy[i] = SpawnSlot.None;
-        break;
-      }
+    // Free the specific slot that this bad guy occupied
+    if (guy._spawnSlot != SpawnSlot.None) {
+      _slotOccupancy[(int)guy._spawnSlot] = SpawnSlot.None;
+    } else {
+      Helpers.Error("BadGuyDied: Died ship had no valid spawn slot assigned.");
     }
 
     UIController.inst.IncrEnemiesDestroyed();

@@ -682,9 +682,9 @@ MonoBehaviour:
   m_fontSize: 3
   m_fontSizeBase: 3
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 2
-  m_fontSizeMax: 4
+  m_fontSizeMax: 3
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -811,6 +811,7 @@ MonoBehaviour:
   _scoreEnemies: {fileID: 247225301084923218}
   _tooltip: {fileID: 2923588154759666148}
   _modulesCollected: 0
+  _enemiesDestroyed: 0
 --- !u!1 &3578317671223784437
 GameObject:
   m_ObjectHideFlags: 0

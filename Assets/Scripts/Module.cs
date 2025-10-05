@@ -464,7 +464,7 @@ public class Module : MonoBehaviour {
   public void SetHp() {
     bool core = _type == ModuleType.Core;
     if (_cell._grid._players) {
-      _maxHp = core ? 20 : 3;
+      _maxHp = core ? 7 : 3;
     } else {
       _maxHp = 3;
     }

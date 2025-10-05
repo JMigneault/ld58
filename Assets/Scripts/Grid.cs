@@ -5,6 +5,7 @@ using System;
 
 public class Grid {
   public bool _players;
+  public SpawnSlot _spawnSlot = SpawnSlot.None; // Added to track the slot this grid occupies
 
   int _modsAdded = 0;
 
@@ -17,11 +18,12 @@ public class Grid {
 
   public int _enginePower = 1;
 
-  public Grid(int dimX, int dimY, GameObject parent, bool players = false) {
+  public Grid(int dimX, int dimY, GameObject parent, bool players = false, SpawnSlot spawnSlot = SpawnSlot.None) {
     _players = players;
     if (players)
       _playersGrid = this;
     _parent = parent;
+    _spawnSlot = spawnSlot; // Assign the spawn slot
     _dimX = dimX;
     _dimY = dimY;
     _cells = new Cell[dimX, dimY];
