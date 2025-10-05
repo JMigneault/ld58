@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Placer {
   public static Placer inst;
+
+  public bool _paused = false;
+
   bool _lock = false;
   public Grid _grid;
   public TileHighlight[,] _highlightTiles; // Changed to a 2D array of TileHighlight
@@ -59,6 +61,8 @@ public class Placer {
     // Clear existing highlights before finding new ones
     StopPlacing();
 
+    SetPaused(true);
+
     Helpers.Log("Placing a mod: {0}", module);
     _currentModule = module;
     _currentModule.transform.SetParent(_parentGo.transform); // Parent to Placer's parent for sync
@@ -73,6 +77,8 @@ public class Placer {
   }
 
   public void StopPlacing() {
+    SetPaused(false);
+
     UIController.inst.SetTooltip("");
 
     for (int x = 0; x < _grid._dimX; x++) {
@@ -269,6 +275,10 @@ public class Placer {
   public void GameOver() {
     StopPlacing();
     _lock = true;
+  }
+
+  public void SetPaused(bool paused) {
+    _paused = paused;
   }
 
 }

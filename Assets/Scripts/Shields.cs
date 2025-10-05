@@ -20,6 +20,9 @@ public class Shields : MonoBehaviour {
   }
 
   void Update() {
+    if (Placer.inst._paused)
+      return;
+
     if (_module._powered) {
       if (_hitsRemaining <= 0)
         _module.SetRecharging(true);

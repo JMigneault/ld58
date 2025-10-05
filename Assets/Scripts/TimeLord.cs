@@ -14,7 +14,7 @@ public class TimeLord : MonoBehaviour {
   }
 
   void Update() {
-    if (!_started) return;
+    if (!_started || Placer.inst._paused) return;
 
     _timeToNextFloater -= Time.deltaTime;
     if (_timeToNextFloater < 0) {

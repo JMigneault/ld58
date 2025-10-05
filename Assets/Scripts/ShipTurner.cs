@@ -11,6 +11,8 @@ public class ShipTurner : MonoBehaviour {
   private Tween _rotationTween;
 
   void Update() {
+    if (Placer.inst._paused)
+      return;
     transform.Rotate(Vector3.forward, _currentRotationVelocity * Time.deltaTime);
   }
 

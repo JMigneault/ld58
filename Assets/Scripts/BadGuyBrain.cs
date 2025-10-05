@@ -22,6 +22,9 @@ public class BadGuyBrain : MonoBehaviour {
   }
 
   void Update() {
+    if (Placer.inst._paused)
+      return;
+
     if (Grid._playersGrid == null || Grid._playersGrid._parent == null) {
       // Player ship destroyed, stop turning
       _shipTurner.SetTargetVelocity(0f);

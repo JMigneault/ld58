@@ -18,6 +18,9 @@ public class Battery : MonoBehaviour {
   }
 
   void Update() {
+    if (Placer.inst._paused)
+      return;
+
     if (_module._cell != null) { // placed
       if (_currentUnits <= 0)
         _module.SetRecharging(true);

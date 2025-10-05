@@ -15,6 +15,9 @@ public class Bullet : MonoBehaviour {
   }
 
   void Update() {
+    if (Placer.inst._paused)
+      return;
+
     // Move forward based on current rotation
     transform.Translate(Vector3.up * _speed * Time.deltaTime);
 

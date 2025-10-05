@@ -49,6 +49,9 @@ public class Weapon : MonoBehaviour {
   }
 
   void Update() {
+    if (Placer.inst._paused)
+      return;
+
     if (_module._powered) {
       if (_shotsRemaining <= 0) {
         _module.SetRecharging(true);
