@@ -136,6 +136,7 @@ public class Grid {
       if (module._needsPower) {
         module._powered = false; // Reset internal powered state
         Coord moduleCoord = module._cell._coord;
+        Module poweredBy = null;
         for (int dx = -1; dx <= 1; dx++) {
           for (int dy = -1; dy <= 1; dy++) {
             if (dx == 0 && dy == 0) continue; // Skip the module itself
@@ -146,6 +147,7 @@ public class Grid {
               Module neighborModule = GetModule(neighborCoord);
               if (neighborModule != null && neighborModule._type == ModuleType.Energy && !neighborModule._recharging) {
                 adjacentToEnergy = true;
+                poweredBy = neighborModule;
                 break; // Found an energy source, no need to check further neighbors for power
               }
             }
@@ -153,7 +155,7 @@ public class Grid {
           if (adjacentToEnergy) break;
         }
         // Apply power if the module needs it and is adjacent to an Energy module
-        module.SetPower(adjacentToEnergy);
+        module.SetPower(poweredBy);
       }
 
     }

@@ -267,13 +267,14 @@ public class Module : MonoBehaviour {
     }
   }
 
-  public void SetPower(bool powered) {
-    _powered = powered;
+  public void SetPower(Module poweredBy) {
+    _poweredBy = poweredBy;
+    _powered = poweredBy != null;
     _uiPowered.SetActive(true); // Ensure the power indicator is active when setting power state
 
     UIBar poweredBar = _uiPowered.GetComponentInChildren<UIBar>();
     if (poweredBar != null) {
-      poweredBar.SetFill(powered ? 1.0f : 0.0f);
+      poweredBar.SetFill(_powered ? 1.0f : 0.0f);
     } else {
       Helpers.Error("UIBar component not found in _uiPowered children.");
     }
