@@ -33,11 +33,11 @@ public class ShipSpec {
       case EnemyShipType.Peon:
         return 1;
       case EnemyShipType.Scout:
-        return 2;
+        return 3;
       case EnemyShipType.Fighter:
         return 5;
       case EnemyShipType.Gunship:
-        return 8;
+        return 10;
       default:
         Helpers.Error("Unknown EnemyShipType: " + t);
         return 0; // Should not happen
@@ -54,16 +54,19 @@ public class ShipSpec {
   }
 }
 
+
+
 public class BadGuyController : MonoBehaviour {
   public static BadGuyController inst;
 
-  public float _targetDifficulty = 2f; // start with a peon
-  public float _currentSpawnedDifficulty = 0f;
-  public float _difficultyIncreaseRate = 0.05f; // Difficulty points per second
-  public float _difficultyAcceleration = 0.001f; // How fast _difficultyIncreaseRate increases per second
+  public int _waveNumber = 0;
+  int _difficulty = 0;
+  float _timePerTick = 5;
+  float _t = 0f;
+  int _ticks = 0;
+  int _ticksBeforeForce = 4;
 
-  public float _spawnInterval = 12f; // Time between potential spawns
-  public float _timeToNextSpawn = 0f;
+  int _leftoverDifficulty = 0;
 
   private SpawnSlot[] _slotOccupancy = new SpawnSlot[4]; // Stores the type of ship in the slot, or None if empty
   private Vector3[] _spawnPositions = new Vector3[4];
@@ -86,96 +89,85 @@ public class BadGuyController : MonoBehaviour {
     _spawnPositions[(int)SpawnSlot.BottomRight] = new Vector3(5.5f, -3.0f, 0);
   }
 
-  // Called from a MonoBehaviour's Update or similar
-  public void GameUpdate() {
-    // Increase target difficulty over time
-    _difficultyIncreaseRate += _difficultyAcceleration * Time.deltaTime;
-    _targetDifficulty += _difficultyIncreaseRate * Time.deltaTime;
+  private void StartNextWave() {
+    _ticks = 0;
+    _difficulty++;
 
-    _timeToNextSpawn -= Time.deltaTime;
+    // Carry over any unspent difficulty from the previous wave
+    int target = _difficulty + _leftoverDifficulty;
+    int actual = 0;
 
-    if (_timeToNextSpawn <= 0) {
-      AttemptSpawn();
-      _timeToNextSpawn = _spawnInterval; // Reset timer for next attempt
+    int shipsSpawnedThisAttempt = 0;
+    while (target > actual) {
+      int remainder = target - actual;
+
+      if (AllSlotsFull()) {
+        _leftoverDifficulty = target - actual;
+        return;
+      }
+
+      ShipSpec shipToSpawn = ChooseShipToSpawn(remainder);
+      actual += ShipSpec.TTD(shipToSpawn._type);
+
+      SpawnSlot chosenSlot = GetAvailableSpawnSlot();
+
+      shipToSpawn._slot = chosenSlot;
+
+      // Create a new GameObject to serve as the root for the enemy ship.
+      GameObject enemyShipRoot = GameObject.Instantiate(Helpers.Prefab("Enemy"));
+
+      // Generate modules for the enemy ship.
+      Grid enemyGrid = GenerateAShip(enemyShipRoot, shipToSpawn);
+
+      _badGuys.Add(enemyGrid);
+      _slotOccupancy[(int)chosenSlot] = shipToSpawn._slot; // Mark slot as occupied
+
+      // Position the enemy ship:
+      Vector3 targetPosition = _spawnPositions[(int)chosenSlot];
+
+      // Initial position: slightly outside the target position for entry animation
+      Vector3 startPositionOffset = Vector3.zero;
+      // Animate from different directions based on slot
+      if (chosenSlot == SpawnSlot.TopLeft || chosenSlot == SpawnSlot.TopRight) {
+        startPositionOffset = new Vector3(0, 10f, 0); // Come from above
+      } else {
+        startPositionOffset = new Vector3(0, -10f, 0); // Come from below
+      }
+      Vector3 startPosition = targetPosition + startPositionOffset;
+
+      // Set initial position
+      enemyShipRoot.transform.position = startPosition;
+
+      // Tween the enemy ship into its target position
+      enemyShipRoot.transform.DOMove(targetPosition, 1.5f) // Tween duration 1.5 seconds
+                   .SetEase(Ease.OutBack) // Use an easing function for a nice effect
+                   .SetLink(enemyShipRoot); // Link to GameObject for automatic killing
+
     }
+
+
   }
 
-  private void AttemptSpawn() {
-    // Don't spawn if all slots are full
-    bool allSlotsFull = true;
-    bool allSlotsEmpty = true;
-    for (int i = 0; i < _slotOccupancy.Length; i++) {
-      if (_slotOccupancy[i] == SpawnSlot.None) {
-        allSlotsFull = false;
-      } else {
-        allSlotsEmpty = false;
-      }
-    }
-    if (allSlotsFull) {
-      Helpers.Log("BadGuyController: All spawn slots full. Skipping spawn attempt.");
-      return;
+  // Called from a MonoBehaviour's Update or similar
+  public void GameUpdate() {
+    if (Placer.inst._paused) return;
+
+    _t -= Time.deltaTime;
+    if (_t <= 0) {
+      _t = _timePerTick;
+      Tick();
     }
 
-    // Calculate how much difficulty we need to make up
-    float neededDifficulty = _targetDifficulty - _currentSpawnedDifficulty;
+  }
+  
+  void Tick() {
+    _ticks++;
 
-    if (allSlotsEmpty && neededDifficulty < 2f) // if there are no enemies, we need to at least spawn a peon
-      neededDifficulty = 2;
+    bool allSlotsEmpty = AllSlotsEmpty();
 
-    if (neededDifficulty <= 0) {
-      Helpers.Log("BadGuyController: Target difficulty met. Skipping spawn attempt.");
-      return;
+    if (allSlotsEmpty || _ticks > _ticksBeforeForce) {
+      StartNextWave();
     }
-
-    // Determine what ship to spawn based on needed difficulty
-    ShipSpec shipToSpawn = ChooseShipToSpawn(neededDifficulty);
-
-    if (shipToSpawn == null) {
-      Helpers.Log("BadGuyController: Could not choose a ship to spawn with current difficulty needs.");
-      return;
-    }
-
-    // Choose an available spawn slot
-    SpawnSlot chosenSlot = GetAvailableSpawnSlot();
-    if (chosenSlot == SpawnSlot.None) {
-      Helpers.Log("BadGuyController: No available spawn slots found.");
-      return;
-    }
-
-    shipToSpawn._slot = chosenSlot;
-
-    // Create a new GameObject to serve as the root for the enemy ship.
-    GameObject enemyShipRoot = GameObject.Instantiate(Helpers.Prefab("Enemy"));
-
-    // Generate modules for the enemy ship.
-    Grid enemyGrid = GenerateAShip(enemyShipRoot, shipToSpawn);
-
-    _badGuys.Add(enemyGrid);
-    _slotOccupancy[(int)chosenSlot] = shipToSpawn._slot; // Mark slot as occupied
-    _currentSpawnedDifficulty += shipToSpawn._difficulty;
-
-    // Position the enemy ship:
-    Vector3 targetPosition = _spawnPositions[(int)chosenSlot];
-
-    // Initial position: slightly outside the target position for entry animation
-    Vector3 startPositionOffset = Vector3.zero;
-    // Animate from different directions based on slot
-    if (chosenSlot == SpawnSlot.TopLeft || chosenSlot == SpawnSlot.TopRight) {
-      startPositionOffset = new Vector3(0, 10f, 0); // Come from above
-    } else {
-      startPositionOffset = new Vector3(0, -10f, 0); // Come from below
-    }
-    Vector3 startPosition = targetPosition + startPositionOffset;
-
-    // Set initial position
-    enemyShipRoot.transform.position = startPosition;
-
-    // Tween the enemy ship into its target position
-    enemyShipRoot.transform.DOMove(targetPosition, 1.5f) // Tween duration 1.5 seconds
-                 .SetEase(Ease.OutBack) // Use an easing function for a nice effect
-                 .SetLink(enemyShipRoot); // Link to GameObject for automatic killing
-
-    Helpers.Log("BadGuyController: Spawned {0} ship (difficulty {1}) in slot {2} at {3}", shipToSpawn._type, shipToSpawn._difficulty, chosenSlot, targetPosition);
   }
 
   private ShipSpec ChooseShipToSpawn(float neededDifficulty) {
@@ -210,6 +202,24 @@ public class BadGuyController : MonoBehaviour {
       return availableSlots[Random.Range(0, availableSlots.Count)];
     }
     return SpawnSlot.None;
+  }
+
+  private bool AllSlotsEmpty() {
+    for (int i = 0; i < _slotOccupancy.Length; i++) {
+      if (_slotOccupancy[i] != SpawnSlot.None) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private bool AllSlotsFull() {
+    for (int i = 0; i < _slotOccupancy.Length; i++) {
+      if (_slotOccupancy[i] == SpawnSlot.None) {
+        return false;
+      }
+    }
+    return true;
   }
 
   Grid GenerateAShip(GameObject go, ShipSpec spec) {
@@ -332,7 +342,11 @@ public class BadGuyController : MonoBehaviour {
   public void BadGuyDied(Grid guy) {
     _badGuys.Remove(guy);
 
-    // Free its slot.
+    // Find and free its slot.
+    // NOTE: This currently frees the *first* occupied slot found.
+    // If specific enemy -> slot mapping is desired, _slotOccupancy needs to store
+    // references to the actual Grid objects or their unique identifiers.
+    int freedSlotIdx = -1;
     for (int i = 0; i < _slotOccupancy.Length; i++) {
       if (_slotOccupancy[i] != SpawnSlot.None) {
         _slotOccupancy[i] = SpawnSlot.None;
@@ -345,10 +359,6 @@ public class BadGuyController : MonoBehaviour {
 
   public void GameOver() {
     // Stop spawning new enemies
-    _difficultyIncreaseRate = 0;
-    _difficultyAcceleration = 0;
-    _timeToNextSpawn = float.MaxValue; // Effectively stop spawning
-
     // Make existing bad guys fly away or destroy them
     foreach (Grid badGuyGrid in _badGuys) {
       if (badGuyGrid._parent != null) {
@@ -360,9 +370,7 @@ public class BadGuyController : MonoBehaviour {
     }
     _badGuys.Clear(); // Clear the list after queuing them to fly away
 
-    // Reset difficulty tracking and slots
-    _targetDifficulty = 0f;
-    _currentSpawnedDifficulty = 0f;
+    // Reset difficulty tracking and slots (already done by resetting wave vars)
     for (int i = 0; i < _slotOccupancy.Length; i++) {
       _slotOccupancy[i] = SpawnSlot.None;
     }

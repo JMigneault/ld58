@@ -178,7 +178,6 @@ public class FloatingModuleGenerator {
     }
 
     var m = Generate();
-
     m.GetComponent<FloatingModule>().EnableFloat(true);
 
   }
