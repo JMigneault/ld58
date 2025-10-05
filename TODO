@@ -2,9 +2,8 @@
 Features
 - More enemy generation
 - Tweak/change all colors
-- Per module HP max
-- Module spawn algo
 - Polish module UI.
+- Floating modules can overlap
 
 Bugs
 - hovering a tile over an existing one is pretty glitchy

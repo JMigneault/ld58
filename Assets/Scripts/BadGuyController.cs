@@ -1,47 +1,169 @@
 using UnityEngine;
 using DG.Tweening; // Required for DOTween animations
 
+using UnityEngine;
+using DG.Tweening; // Required for DOTween animations
+using System.Collections.Generic; // Added for List
+
+public enum EnemyShipType {
+  Peon,    // 1x3, Difficulty 1
+  Scout,   // 2x3, Difficulty 3
+  Fighter, // 3x3, Difficulty 5
+  Gunship  // 3x3, Difficulty 10
+}
+
+public enum SpawnSlot {
+  TopLeft,
+  TopRight,
+  BottomLeft,
+  BottomRight,
+  None = -1
+}
+
 public class ShipSpec {
-  // TODO: size, difficulty, facing, etc
+  public EnemyShipType _type;
+  public int _difficulty;
+  public int _dimX;
+  public int _dimY;
+  public SpawnSlot _slot;
+  public dir _facing; // Initial rotation of the ship
+
+  public static int TTD(EnemyShipType t) {
+    switch (t) {
+      case EnemyShipType.Peon:
+        return 1;
+      case EnemyShipType.Scout:
+        return 3;
+      case EnemyShipType.Fighter:
+        return 5;
+      case EnemyShipType.Gunship:
+        return 10;
+      default:
+        Helpers.Error("Unknown EnemyShipType: " + t);
+        return 0; // Should not happen
+    }
+  }
+
+  public ShipSpec(EnemyShipType type, int dimX, int dimY, SpawnSlot slot, dir facing) {
+    _type = type;
+    _difficulty = TTD(type);
+    _dimX = dimX;
+    _dimY = dimY;
+    _slot = slot;
+    _facing = facing;
+  }
 }
 
 public class BadGuyController {
   public static BadGuyController inst;
 
-  bool _rightFull = false;
-  bool _leftFull = false;
+  private float _targetDifficulty = 0f;
+  private float _currentSpawnedDifficulty = 0f;
+  private float _difficultyIncreaseRate = 0.5f; // Difficulty points per second
+  private float _difficultyAcceleration = 0.01f; // How fast _difficultyIncreaseRate increases per second
+
+  private float _spawnInterval = 5.0f; // Time between potential spawns
+  private float _timeToNextSpawn = 0f;
+  private float _lastSpawnTriggerTime = 0f;
+
+  private SpawnSlot[] _slotOccupancy = new SpawnSlot[4]; // Stores the type of ship in the slot, or None if empty
+  private Vector3[] _spawnPositions = new Vector3[4];
   private System.Collections.Generic.List<Grid> _badGuys = new System.Collections.Generic.List<Grid>();
 
   public BadGuyController() {
     inst = this;
+    _timeToNextSpawn = _spawnInterval; // First spawn attempt after interval
+
+    // Initialize slot occupancy to None
+    for (int i = 0; i < _slotOccupancy.Length; i++) {
+      _slotOccupancy[i] = SpawnSlot.None;
+    }
+
+    // Define fixed spawn positions for 4 slots
+    // (top left, top right, bot left, bot right) relative to the player ship's area
+    // These are world positions
+    _spawnPositions[(int)SpawnSlot.TopLeft] = new Vector3(-6.5f, 5.0f, 0); // Example values
+    _spawnPositions[(int)SpawnSlot.TopRight] = new Vector3(6.5f, 5.0f, 0);
+    _spawnPositions[(int)SpawnSlot.BottomLeft] = new Vector3(-6.5f, -5.0f, 0);
+    _spawnPositions[(int)SpawnSlot.BottomRight] = new Vector3(6.5f, -5.0f, 0);
   }
 
-  public Grid Spawn() {
-    if (_leftFull)
-      return null;
-    _leftFull = true;
+  // Called from a MonoBehaviour's Update or similar
+  public void GameUpdate() {
+    // Increase target difficulty over time
+    _difficultyIncreaseRate += _difficultyAcceleration * Time.deltaTime;
+    _targetDifficulty += _difficultyIncreaseRate * Time.deltaTime;
+
+    _timeToNextSpawn -= Time.deltaTime;
+
+    if (_timeToNextSpawn <= 0) {
+      AttemptSpawn();
+      _timeToNextSpawn = _spawnInterval; // Reset timer for next attempt
+      _lastSpawnTriggerTime = Time.time;
+    }
+  }
+
+  private void AttemptSpawn() {
+    // Don't spawn if all slots are full
+    bool allSlotsFull = true;
+    for (int i = 0; i < _slotOccupancy.Length; i++) {
+      if (_slotOccupancy[i] == SpawnSlot.None) {
+        allSlotsFull = false;
+        break;
+      }
+    }
+    if (allSlotsFull) {
+      Helpers.Log("BadGuyController: All spawn slots full. Skipping spawn attempt.");
+      return;
+    }
+
+    // Calculate how much difficulty we need to make up
+    float neededDifficulty = _targetDifficulty - _currentSpawnedDifficulty;
+
+    if (neededDifficulty <= 0) {
+      Helpers.Log("BadGuyController: Target difficulty met. Skipping spawn attempt.");
+      return;
+    }
+
+    // Determine what ship to spawn based on needed difficulty
+    ShipSpec shipToSpawn = ChooseShipToSpawn(neededDifficulty);
+
+    if (shipToSpawn == null) {
+      Helpers.Log("BadGuyController: Could not choose a ship to spawn with current difficulty needs.");
+      return;
+    }
+
+    // Choose an available spawn slot
+    SpawnSlot chosenSlot = GetAvailableSpawnSlot();
+    if (chosenSlot == SpawnSlot.None) {
+      Helpers.Log("BadGuyController: No available spawn slots found.");
+      return;
+    }
+
+    shipToSpawn._slot = chosenSlot;
 
     // Create a new GameObject to serve as the root for the enemy ship.
-    // This allows us to move and tween the entire ship.
     GameObject enemyShipRoot = GameObject.Instantiate(Helpers.Prefab("Enemy"));
 
     // Generate modules for the enemy ship.
-    Grid enemyGrid = GenerateAShip(enemyShipRoot);
+    Grid enemyGrid = GenerateAShip(enemyShipRoot, shipToSpawn);
 
     _badGuys.Add(enemyGrid);
+    _slotOccupancy[(int)chosenSlot] = shipToSpawn._slot; // Mark slot as occupied
+    _currentSpawnedDifficulty += shipToSpawn._difficulty;
 
     // Position the enemy ship:
-    // 1. To the right of the player's ship.
-    // 2. Initial position below the screen, then tween up.
+    Vector3 targetPosition = _spawnPositions[(int)chosenSlot];
 
-    // Get player ship's grid reference for positioning
-    Grid playerGrid = Init._inst._grid;
-    GameObject playerShipRoot = playerGrid._parent;
-
-    Vector3 targetPosition = new Vector3(5.5f, 0f, 0);
-
-    // Initial position: below the target position (off-screen)
-    Vector3 startPosition = targetPosition + new Vector3(0, -10f, 0); // 10 units below
+    // Initial position: slightly outside the target position for entry animation
+    Vector3 startPositionOffset = Vector3.zero;
+    // Animate from different directions based on slot
+    if (chosenSlot == SpawnSlot.TopLeft || chosenSlot == SpawnSlot.TopRight) {
+      startPositionOffset = new Vector3(0, 10f, 0); // Come from above
+    } else {
+      startPositionOffset = new Vector3(0, -10f, 0); // Come from below
+    }
+    Vector3 startPosition = targetPosition + startPositionOffset;
 
     // Set initial position
     enemyShipRoot.transform.position = startPosition;
@@ -51,49 +173,198 @@ public class BadGuyController {
                  .SetEase(Ease.OutBack) // Use an easing function for a nice effect
                  .SetLink(enemyShipRoot); // Link to GameObject for automatic killing
 
-    Helpers.Log("BadGuyController: Spawned enemy ship at {0}", targetPosition);
+    // Set initial rotation based on facing direction, then tween to look at player
+    // TODO: XXX
+    // enemyShipRoot.transform.rotation = Quaternion.Euler(0, 0, (int)shipToSpawn._facing * 90f); // Default rotation (U=0, R=-90, D=-180, L=90)
 
-    return enemyGrid;
+    Helpers.Log("BadGuyController: Spawned {0} ship (difficulty {1}) in slot {2} at {3}", shipToSpawn._type, shipToSpawn._difficulty, chosenSlot, targetPosition);
   }
 
-  Grid GenerateAShip(GameObject go) {
-    return GenerateScout(go);
+  private ShipSpec ChooseShipToSpawn(float neededDifficulty) {
+    // Prioritize spawning harder ships if neededDifficulty is high, otherwise easier ones.
+    // The order is Peon, Scout, Fighter, Gunship (difficulty 1, 3, 5, 10)
+
+    // Consider ships from hardest to easiest that fit the needed difficulty
+    if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Gunship)) { // Gunship
+      return new ShipSpec(EnemyShipType.Gunship, 4, 4, SpawnSlot.None, dir.D); // Dummy slot, facing
+    }
+    if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Fighter)) { // Fighter
+      return new ShipSpec(EnemyShipType.Fighter, 3, 3, SpawnSlot.None, dir.D);
+    }
+    if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Scout)) { // Scout
+      return new ShipSpec(EnemyShipType.Scout, 2, 3, SpawnSlot.None, dir.D);
+    }
+    if (neededDifficulty >= ShipSpec.TTD(EnemyShipType.Peon)) { // Peon
+      return new ShipSpec(EnemyShipType.Peon, 1, 2, SpawnSlot.None, dir.D);
+    }
+    return null; // No suitable ship to spawn
   }
+
+  private SpawnSlot GetAvailableSpawnSlot() {
+    List<SpawnSlot> availableSlots = new List<SpawnSlot>();
+    for (int i = 0; i < _slotOccupancy.Length; i++) {
+      if (_slotOccupancy[i] == SpawnSlot.None) {
+        availableSlots.Add((SpawnSlot)i);
+      }
+    }
+
+    if (availableSlots.Count > 0) {
+      return availableSlots[Random.Range(0, availableSlots.Count)];
+    }
+    return SpawnSlot.None;
+  }
+
+  Grid GenerateAShip(GameObject go, ShipSpec spec) {
+    switch (spec._type) {
+      case EnemyShipType.Peon:
+        return GeneratePeon(go, spec);
+      case EnemyShipType.Scout:
+        return GenerateScout(go, spec);
+      case EnemyShipType.Fighter:
+        return GenerateFighter(go, spec);
+      case EnemyShipType.Gunship:
+        return GenerateGunship(go, spec);
+      default:
+        Helpers.Error("GenerateAShip: Unknown enemy ship type: " + spec._type);
+        return GenerateScout(go, spec); // Fallback to scout
+    }
+  }
+
+  // 1x2 ship. Very basic.
+  Grid GeneratePeon(GameObject go, ShipSpec spec) {
+    go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go);
+
+    Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
+    Coord cc = new Coord(0, 0); // Core at (0,0)
+    ship.AddModule(coreModule, cc);
+
+    Module weaponModule = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.D)); // Protrusion down
+    ship.AddModule(weaponModule, cc.Neighbor(dir.D)); // Weapon below core
+
+    Helpers.Log("BadGuyController: Generated a Peon ship.");
+    return ship;
+  }
+
 
   // 2x3 ship. One gun and connectors.
-  Grid GenerateScout(GameObject go) {
-    go.GetComponent<ShipSizer>().Size(2, 3);
+  Grid GenerateScout(GameObject go, ShipSpec spec) {
+    go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
 
-    Grid ship = new Grid(2, 3, go);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go);
 
     Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
     Coord cc = new Coord(1, 1);
     ship.AddModule(coreModule, cc);
 
     // Add some connection modules around the core
-    Module gun = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, new bool[] {true,true,true,false}, dir.L));
+    Module gun = Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)); // Protrusion left
     ship.AddModule(gun, cc.Neighbor(dir.L));
 
     // Add some connection modules around the core
-    Module power = Module.MakeModule(new ModuleSpec(ModuleType.Energy, new bool[] {true,true,true,true}));
+    Module power = Module.MakeModule(new ModuleSpec(ModuleType.Energy));
     ship.AddModule(power, cc.Neighbor(dir.U));
 
-    var connSpec = new ModuleSpec(ModuleType.Connection);
-    ship.AddModule(Module.MakeModule(connSpec), new Coord(0, 0));
-    ship.AddModule(Module.MakeModule(connSpec), new Coord(0, 2));
-    ship.AddModule(Module.MakeModule(connSpec), new Coord(1, 2));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 0));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 2));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(1, 2));
 
     Helpers.Log("BadGuyController: Generated a scout ship.");
 
     return ship;
   }
 
+  // 3x3 ship. Two guns, shields, and energy.
+  Grid GenerateFighter(GameObject go, ShipSpec spec) {
+    go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go);
+
+    Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
+    Coord cc = new Coord(1, 1);
+    ship.AddModule(coreModule, cc);
+
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), cc.Neighbor(dir.L)); // Protrusion left
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.R)), cc.Neighbor(dir.R)); // Protrusion right
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), cc.Neighbor(dir.U));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), cc.Neighbor(dir.D));
+
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 0));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(2, 0));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(0, 2));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(2, 2));
+
+    Helpers.Log("BadGuyController: Generated a Fighter ship.");
+    return ship;
+  }
+
+  // 4x4 ship. Multiple guns, shields, energy, and engines.
+  Grid GenerateGunship(GameObject go, ShipSpec spec) {
+    go.GetComponent<ShipSizer>().Size(spec._dimX, spec._dimY);
+    Grid ship = new Grid(spec._dimX, spec._dimY, go);
+
+    Module coreModule = Module.MakeModule(new ModuleSpec(ModuleType.Core));
+    Coord cc = new Coord(1, 1); // Place core offset for larger ships
+    ship.AddModule(coreModule, cc);
+
+    // Weapons
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.L)), new Coord(0, 1)); // Protrusion left
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.R)), new Coord(3, 1)); // Protrusion right
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.U)), new Coord(1, 0)); // Protrusion up
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Weapon, dir.D)), new Coord(2, 3)); // Protrusion down
+
+    // Shields and Energy
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), new Coord(0, 0));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Shield)), new Coord(3, 0));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), new Coord(0, 2));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Energy)), new Coord(3, 2));
+
+    // Engines
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Engine)), new Coord(1, 3));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Engine)), new Coord(2, 0));
+
+    // Connections
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(1, 2));
+    ship.AddModule(Module.MakeModule(new ModuleSpec(ModuleType.Connection)), new Coord(2, 1));
+
+    Helpers.Log("BadGuyController: Generated a Gunship.");
+    return ship;
+  }
+
   public void BadGuyDied(Grid guy) {
     _badGuys.Remove(guy);
+
+    // Free its slot.
+    for (int i = 0; i < _slotOccupancy.Length; i++) {
+        if (_slotOccupancy[i] != SpawnSlot.None) {
+            _slotOccupancy[i] = SpawnSlot.None;
+            break;
+        }
+    }
   }
 
   public void GameOver() {
-    // TODO: bad guys fly away, don't spawn any more
+    // Stop spawning new enemies
+    _difficultyIncreaseRate = 0;
+    _difficultyAcceleration = 0;
+    _timeToNextSpawn = float.MaxValue; // Effectively stop spawning
+
+    // Make existing bad guys fly away or destroy them
+    foreach (Grid badGuyGrid in _badGuys) {
+      if (badGuyGrid._parent != null) {
+        // Tween them off screen, or just destroy them
+        badGuyGrid._parent.transform.DOMoveY(20f, 3.0f).SetEase(Ease.InBack).OnComplete(() => {
+          UnityEngine.Object.Destroy(badGuyGrid._parent);
+        });
+      }
+    }
+    _badGuys.Clear(); // Clear the list after queuing them to fly away
+
+    // Reset difficulty tracking and slots
+    _targetDifficulty = 0f;
+    _currentSpawnedDifficulty = 0f;
+    for (int i = 0; i < _slotOccupancy.Length; i++) {
+      _slotOccupancy[i] = SpawnSlot.None;
+    }
   }
 
 }

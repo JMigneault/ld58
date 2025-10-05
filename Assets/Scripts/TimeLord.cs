@@ -18,11 +18,8 @@ public class TimeLord : MonoBehaviour {
       SetTimeToNextFloater();
     }
 
-    _timeToNextEnemy -= Time.deltaTime;
-    if (_timeToNextEnemy < 0) {
-      BadGuyController.inst.Spawn();
-      SetTimeToNextEnemy();
-    }
+    // Call the BadGuyController's update method
+    BadGuyController.inst.GameUpdate();
   }
 
   void SetTimeToNextFloater() {
