@@ -10,6 +10,8 @@ Features
 - Reuse shot modules
 - Make weapons lower bar and then restore, just like battery/shield
   - add second color for when bar is restoring?
+- Choose font
+- Blow up ships when core is destroyed
 
 Bugs
 - placement rules aren't right

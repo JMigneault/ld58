@@ -369,11 +369,13 @@ public class Module : MonoBehaviour {
     if (_cell != null) {
       SetShowHalo(true);
     }
+    UIController.inst.SetTooltip(GetTooltip());
   }
 
   public void UnHover() {
     SetScaled(false);
     SetShowHalo(false);
+    UIController.inst.SetTooltip("");
   }
 
   public void ProjectingCoord(Coord coord) {
@@ -398,7 +400,7 @@ public class Module : MonoBehaviour {
 
     switch (_type) {
       case ModuleType.Core:
-        return "Core (C)\nIf this is destroyed, you lose.";
+        return "Core (C)\nKills the ship when destroyed.";
       case ModuleType.Connection:
         return "Connector\nNo special effects.";
       case ModuleType.Energy:

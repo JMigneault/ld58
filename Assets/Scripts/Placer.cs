@@ -60,9 +60,13 @@ public class Placer {
     EnableHighlights();
 
     module.GetComponentInChildren<TileHighlight>().SetHighlightMode(HighlightMode.Placing);
+
+    UIController.inst.SetTooltip(module.GetTooltip());
   }
 
   public void StopPlacing() {
+    UIController.inst.SetTooltip("");
+
     for (int x = 0; x < _grid._dimX; x++) {
       for (int y = 0; y < _grid._dimY; y++) {
         if (_highlightTiles[x, y] != null) {

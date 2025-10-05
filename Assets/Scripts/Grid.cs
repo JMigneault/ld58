@@ -53,6 +53,9 @@ public class Grid {
 
         UpdateStats();
 
+        if (_players)
+          UIController.inst.IncrModulesCollected();
+
         return true;
       }
     }
@@ -106,7 +109,7 @@ public class Grid {
       _enginePower = 5;
 
     if (_players) {
-      UIController.inst.SetEnginePower(_enginePower);
+      UIController.inst.SetEngineStrength(_enginePower);
     }
 
   }
