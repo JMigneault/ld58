@@ -2778,15 +2778,20 @@ MonoBehaviour:
   _uiProtrusionL: {fileID: 2223546446105682018}
   _powerHaloColor: {r: 1, g: 0.95686275, b: 0, a: 0.29803923}
   _shieldHaloColor: {r: 0, g: 0.5999999, b: 1, a: 0.29803923}
+  _energyLabelColor: {r: 1, g: 0.95686275, b: 0, a: 1}
+  _shieldLabelColor: {r: 0, g: 0.6, b: 1, a: 1}
   _maxHp: 0
   _needsPower: 0
   _hasProtrusion: 0
   _protrusionDir: 0
   _hp: 0
-  _shielded: 0
+  _shieldedBy: {fileID: 0}
   _powered: 0
   _type: 1
   _weapon: {fileID: 0}
+  _shields: {fileID: 0}
+  _battery: {fileID: 0}
+  _recharging: 0
   _connects: 00000000
 --- !u!114 &5941942407078719810
 MonoBehaviour:
@@ -2895,7 +2900,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
+  - {fileID: -3930599586835051725, guid: 570ed82fd1cf34143969facfcc64d55c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2937,10 +2942,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: G
+  m_text: H
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 570ed82fd1cf34143969facfcc64d55c, type: 2}
+  m_sharedMaterial: {fileID: -3930599586835051725, guid: 570ed82fd1cf34143969facfcc64d55c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2970,7 +2975,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 1
   m_fontSizeMax: 5
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 4096
   m_textAlignment: 65535

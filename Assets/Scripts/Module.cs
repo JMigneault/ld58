@@ -67,6 +67,8 @@ public class Module : MonoBehaviour {
 
   public Color _powerHaloColor;
   public Color _shieldHaloColor;
+  public Color _energyLabelColor; // AI: Default color for Energy module label
+  public Color _shieldLabelColor; // AI: Default color for Shield module label
 
   [Header("Attributes")]
   public int _maxHp;
@@ -159,6 +161,7 @@ public class Module : MonoBehaviour {
       case ModuleType.Energy:
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "P";
+          mod._uiLabel.GetComponent<TMP_Text>().color = mod._energyLabelColor;
         }
         // TODO: Initialize Energy module specifics
         mod._battery = mod.gameObject.AddComponent<Battery>();
@@ -183,6 +186,7 @@ public class Module : MonoBehaviour {
         mod._needsPower = true;
         mod._uiPowered.SetActive(true);
         mod._shields = mod.gameObject.AddComponent<Shields>();
+        mod._uiLabel.GetComponent<TMP_Text>().color = mod._shieldLabelColor;
         // TODO: Initialize Shield module specifics
         break;
       case ModuleType.Engine:

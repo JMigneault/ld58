@@ -1,6 +1,5 @@
 
 Features
-- Add screen ui
 - Implement (more) modules
 - More enemy generation
 - Tweak/change all colors
@@ -12,6 +11,7 @@ Features
   - add second color for when bar is restoring?
 - Choose font
 - Blow up ships when core is destroyed
+- Polish module UI.
 
 Bugs
 - placement rules aren't right
