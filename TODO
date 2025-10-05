@@ -14,16 +14,14 @@ Features
 - Polish module UI.
 
 Bugs
-- placement rules aren't right
 - placement doesn't work with ship rotation
+- hovering a tile over an existing one is pretty glitchy
 
 Juice
-- scale up floating mods when hovered
 
 Stretch
-- Boost modules
 - Juice!!
 - Module icons
 - Sound effects
 - Music
-- more modules (eg. different weapons)
+- more modules (eg. different weapons, boost)

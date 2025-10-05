@@ -91,7 +91,7 @@ public class Placer {
       // Determine the coordinate where the module is effectively placed
       Coord hoverCoord = new Coord(-1, -1);
       if (_grid.ValidCoord(currentHoveredCoord)) {
-        Coord placementCandidate = ChoosePlacementCandidate(mousePosition);
+        Coord placementCandidate = ChoosePlacementCandidate(mousePosition, _currentModule);
         _currentModule.StopProjecting();
         if (placementCandidate.x != -1) { // A valid candidate exists
           hoverCoord = placementCandidate;
@@ -188,7 +188,7 @@ public class Placer {
 
   public bool TryPlacing(Vector2 mousePosition) {
     if (_currentModule != null) {
-      Coord candidateCoord = ChoosePlacementCandidate(mousePosition);
+      Coord candidateCoord = ChoosePlacementCandidate(mousePosition, _currentModule);
 
       if (candidateCoord.x == -69 && !_currentModule.GetComponent<FloatingModule>().startPlacingThisFrame) { // HACK - clicked outside the grid - stop placing
         Helpers.Log("Try placing hitting hack!");
@@ -211,7 +211,7 @@ public class Placer {
     return false;
   }
 
-  public Coord ChoosePlacementCandidate(Vector2 mousePosition) {
+  public Coord ChoosePlacementCandidate(Vector2 mousePosition, Module module) {
     Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mousePosition);
     Coord hoveredCoord = _grid.PositionToCoord(new Vector2(mouseWorldPos.x, mouseWorldPos.y));
 
@@ -221,9 +221,6 @@ public class Placer {
     if (!_grid.ValidCoord(hoveredCoord))
       return new Coord(-69, -1); // huge HACK - this signals that we clicked out of the ship grid
 
-    if (_grid.ValidCoord(hoveredCoord) && _grid.GetModule(hoveredCoord) != null)
-      return closestCand; // none
-
     foreach (dir d in hoveredCoord.allDirs) {
       Coord cursor = hoveredCoord;
       int dist = 0;
@@ -231,7 +228,16 @@ public class Placer {
              (d == dir.R && cursor.x < _grid._dimX) ||
              (d == dir.D && cursor.y < _grid._dimY) ||
              (d == dir.L && cursor.x >= 0)) {
-        Coord next = cursor.Neighbor(d);
+
+        if (_grid.GetModule(cursor) != null)
+          break; // hit a wall
+
+        if (dist < closestCandDist && CanPlaceModule(module, _grid, cursor)) {
+          closestCandDist = dist;
+          closestCand = cursor;
+          break;
+        }
+/*
         Module nextModule = _grid.GetModule(next);
         if (_grid.ValidCoord(next) && nextModule != null) {
           // Found an existing module in this direction.
@@ -246,6 +252,9 @@ public class Placer {
           }
           break; // Stop looking in this direction, found the edge
         }
+        */
+
+        Coord next = cursor.Neighbor(d);
         cursor = next;
         dist++;
       }
