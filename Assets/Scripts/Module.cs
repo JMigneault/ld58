@@ -67,6 +67,9 @@ public class Module : MonoBehaviour {
 
   public Color _powerHaloColor;
   public Color _shieldHaloColor;
+  public Color _engineLabelColor;
+  public Color _coreLabelColor;
+  public Color _weaponLabelColor;
   public Color _energyLabelColor;
   public Color _shieldLabelColor;
 
@@ -153,6 +156,7 @@ public class Module : MonoBehaviour {
       case ModuleType.Core:
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "C";
+          mod._uiLabel.GetComponent<TMP_Text>().color = mod._coreLabelColor;
         }
         // TODO: Initialize Core module specifics
         break;
@@ -174,6 +178,7 @@ public class Module : MonoBehaviour {
         mod._protrusionDir = spec._protrusionDir;
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "G";
+          mod._uiLabel.GetComponent<TMP_Text>().color = mod._weaponLabelColor;
         }
         mod._needsPower = true;
         mod._uiPowered.SetActive(true);
@@ -182,15 +187,16 @@ public class Module : MonoBehaviour {
       case ModuleType.Shield:
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "S";
+          mod._uiLabel.GetComponent<TMP_Text>().color = mod._shieldLabelColor;
         }
         mod._needsPower = true;
         mod._uiPowered.SetActive(true);
         mod._shields = mod.gameObject.AddComponent<Shields>();
-        mod._uiLabel.GetComponent<TMP_Text>().color = mod._shieldLabelColor;
         break;
       case ModuleType.Engine:
         if (mod._uiLabel != null) {
           mod._uiLabel.GetComponent<TMP_Text>().text = "E";
+          mod._uiLabel.GetComponent<TMP_Text>().color = mod._engineLabelColor;
         }
         mod._needsPower = true;
         mod._uiPowered.SetActive(true);
